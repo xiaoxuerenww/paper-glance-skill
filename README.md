@@ -29,26 +29,9 @@
 
 > **什么是 Skill？** Skill 是给 Claude 增加专项能力的指令文件夹，放到指定目录后 Claude 会自动识别和使用。目前支持 **Claude Desktop**（需登录账号）。
 
-**方式 A：git clone（推荐）**
-
-```bash
-# macOS / Linux：克隆到 Claude Skills 默认目录
-git clone https://github.com/CatVinci-Studio/paper-glance-skill.git \
-  ~/Library/Application\ Support/Claude/skills/paper-glance-skill
-
-# Windows（PowerShell）
-git clone https://github.com/CatVinci-Studio/paper-glance-skill.git `
-  "$env:APPDATA\Claude\skills\paper-glance-skill"
-```
-
-**方式 B：手动下载**
-
-1. 点击右上角 `Code → Download ZIP`，解压得到 `paper-glance-skill/` 文件夹
-2. 将整个文件夹移动到 Claude Skills 目录：
-   - **macOS**：`~/Library/Application Support/Claude/skills/`
-   - **Windows**：`%APPDATA%\Claude\skills\`
-   - **Linux**：`~/.config/Claude/skills/`
-3. 重启 Claude Desktop，完成 ✅
+1. 点击右上角 `Code → Download ZIP`，或者在Release中下载。
+2. 在Claude Code打开`Customize`、 `Skills`中的`Upload a skill`
+3. 上传压缩包, Skill安装完成 ✅
 
 ### 第二步：开始使用
 
