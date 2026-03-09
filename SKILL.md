@@ -1,6 +1,6 @@
 ---
 name: paper-glance
-description: 论文全能处理工具。每当用户上传论文 PDF、粘贴论文文本/摘要，或提到"论文"、"paper"、"文献"、"arxiv"时必须使用此 skill。功能包括：深度分析报告、思维导图、审稿意见、宣传推广脚本。即使用户只说"帮我看这篇论文"或直接上传 PDF 也必须触发。
+description: 论文全能处理工具。每当用户上传论文 PDF、粘贴论文文本/摘要，或提到"论文"、"paper"、"文献"、"arxiv"时必须使用此 skill。功能包括：深度分析报告、思维导图、审稿意见、宣传推广脚本、播客音频生成。即使用户只说"帮我看这篇论文"或直接上传 PDF 也必须触发。
 ---
 
 # Paper Glance — 论文全能处理工具
@@ -46,7 +46,8 @@ description: 论文全能处理工具。每当用户上传论文 PDF、粘贴论
 | 2 | 🧠 思维导图 | Mermaid 思维导图或流程图，无需任何插件，即时渲染 |
 | 3 | 🔍 审稿意见 | 按 Summary / Strengths / Weaknesses / Questions 格式输出 |
 | 4 | 📢 宣传脚本 | 社交媒体推文、公众号摘要、演讲介绍 |
-| 0 | 全部 | 按 1→4 顺序依次生成所有内容 |
+| 5 | 🎙️ 播客音频 | 单人解说或双人对话脚本，可直接生成 MP3 音频 |
+| 0 | 全部 | 按 1→5 顺序依次生成所有内容 |
 
 回复数字即可，也可以说"帮我做审稿"这样的自然语言。
 
@@ -62,6 +63,7 @@ description: 论文全能处理工具。每当用户上传论文 PDF、粘贴论
 | 2 / 思维导图 | `/mnt/skills/user/paper-glance/modules/02_mindmap.md` |
 | 3 / 审稿 | `/mnt/skills/user/paper-glance/modules/03_review.md` |
 | 4 / 宣传 | `/mnt/skills/user/paper-glance/modules/04_promo.md` |
+| 5 / 播客 | `/mnt/skills/user/paper-glance/modules/05_podcast.md` |
 | 0 / 全部 | 依次用 view 工具读取所有模块 |
 
 执行完成后，询问："还需要做其他的吗？"（展示剩余选项）
@@ -69,5 +71,6 @@ description: 论文全能处理工具。每当用户上传论文 PDF、粘贴论
 ---
 
 - `PAPER_CORE` 在整个对话中保持有效，切换模块时**不重新读论文**
-- 用户如果直接说"帮我审稿"、"生成思维导图"等，跳过菜单直接执行对应模块
+- 用户如果直接说"帮我审稿"、"生成思维导图"、"做个播客"等，跳过菜单直接执行对应模块
 - 用户如果上传了新论文，重新执行第二步更新 `PAPER_CORE`
+- 播客模块（5）需要 edge-tts MCP 已连接才能生成音频；若未连接，仅输出文字脚本

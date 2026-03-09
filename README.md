@@ -1,12 +1,14 @@
 # 📄 Paper Glance
 
+中文说明（当前页） | English: [README_EN.md](README_EN.md)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Claude Skill](https://img.shields.io/badge/Claude-Skill-blueviolet?logo=anthropic)](https://claude.ai)
 [![Zero MCP Required](https://img.shields.io/badge/MCP-Not_Required-brightgreen)](https://claude.ai)
 
 **Claude Skill：论文全能处理工具**
 
-上传任意学术论文 PDF，Claude 自动帮你生成：深度分析报告、思维导图、专业审稿意见、宣传文案。**无需安装任何插件，开箱即用。**
+上传任意学术论文 PDF，Claude 自动帮你生成：深度分析报告、思维导图、专业审稿意见、宣传文案、播客脚本与音频。**核心功能开箱即用，无需额外插件。**
 
 ---
 
@@ -18,8 +20,9 @@
 | 2 | 🧠 思维导图 | Mermaid 思维导图 + 方法流程图，对话内直接渲染 | 
 | 3 | 🔍 审稿意见 | Summary / Strengths / Weaknesses / Questions 专业格式 | 
 | 4 | 📢 宣传脚本 | 推文、公众号摘要、演讲开场白、邮件摘要 |
+| 5 | 🎙️ 播客音频 | 单人/双人播客脚本，可连接 TTS 一键生成 MP3 |
 
-> 全部功能纯文本输出，无需任何 MCP 插件。
+> 1-4 功能无需 MCP；5 号播客在未连接 TTS MCP 时会自动降级为纯文字脚本。
 
 ---
 
@@ -56,6 +59,7 @@ Claude 会自动读取论文，展示功能菜单：
   2  🧠 思维导图
   3  🔍 审稿意见
   4  📢 宣传脚本
+  5  🎙️ 播客音频
   0  全部生成
 ```
 
@@ -88,6 +92,16 @@ Claude 会自动读取论文，展示功能菜单：
 ### 4 · 📢 宣传脚本
 一键生成多种宣传格式：Twitter/X 推文（含 hashtag）、公众号/知乎摘要、学术演讲开场介绍、邮件摘要。
 
+### 5 · 🎙️ 播客脚本 + 音频生成
+将论文自动转成可播客化内容，支持两种模式：
+
+- 单人解说（主播独白，科普节奏）
+- 双人对话（主持人 x 研究员，问答互动）
+
+若已连接 `better-tts-mcp`，可直接生成 MP3；若未连接则自动降级为文字脚本，不影响使用。
+
+- TTS 项目链接：`https://github.com/CatVinci-Studio/better-tts-mcp`
+
 ---
 
 ## 📁 文件结构
@@ -96,13 +110,15 @@ Claude 会自动读取论文，展示功能菜单：
 paper-glance-skill/
 ├── SKILL.md                # 入口：论文理解 + 功能菜单
 ├── README.md               # 本文件
+├── README_EN.md            # 英文说明
 ├── shared/
 │   └── paper_core.md       # 共享论文提取框架
 └── modules/
     ├── 01_analysis.md      # 深度分析报告
     ├── 02_mindmap.md       # 思维导图 + 流程图
     ├── 03_review.md        # 审稿意见
-    └── 04_promo.md         # 宣传脚本
+    ├── 04_promo.md         # 宣传脚本
+    └── 05_podcast.md       # 播客脚本 + 音频生成
 ```
 
 ---
@@ -120,6 +136,9 @@ paper-glance-skill/
 
 **Q：可以同时处理多篇论文吗？**
 上传新论文后发送消息，Claude 会自动更新到新论文。如需对比多篇，建议开启新对话分别处理。
+
+**Q：播客功能为什么没生成 MP3？**
+通常是因为未连接 TTS MCP。此时 Skill 会自动降级为文字脚本模式。按以下项目安装并连接后即可直接生成音频：`https://github.com/CatVinci-Studio/better-tts-mcp`
 
 ---
 
