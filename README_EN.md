@@ -22,7 +22,7 @@ Upload any academic PDF and Claude can generate deep analysis, mindmaps, reviewe
 | 4 | 📢 Promo Scripts | Twitter/X post, blog-style summary, talk intro, email summary |
 | 5 | 🎙️ Podcast Audio | Solo or dual-host script, optional one-click MP3 via TTS |
 
-> Features 1-4 do not require MCP. Feature 5 falls back to text-only script mode when TTS MCP is unavailable.
+> Features 1-4 do not require MCP. Feature 5 falls back to text-only script mode when [TTS MCP](https://github.com/CatVinci-Studio/better-tts-mcp) is unavailable.
 
 ---
 
