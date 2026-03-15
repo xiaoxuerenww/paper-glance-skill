@@ -4,23 +4,13 @@
 
 ---
 
-## 第零步：加载并检测 edge-tts MCP 是否可用
+## 第零步：检测 edge-tts MCP 是否可用
 
 **在询问任何播客形式之前，必须先完成此检测。**
 
-### 0a. 加载 MCP 工具定义
+### 0a. 检测 MCP 连接状态
 
-edge-tts 是延迟加载工具（deferred tool），**必须先调用 `tool_search` 加载工具定义，才能使用**。
-
-```
-tool_search(query="edge-tts list voices")
-```
-
-> ⚠️ 如果跳过此步骤直接调用 `edge-tts:list_voices`，会因为工具未加载而失败。
-
-### 0b. 检测 MCP 连接状态
-
-加载成功后，尝试调用 `edge-tts:list_voices` 工具（无参数）：
+尝试调用 `edge-tts:list_voices` 工具（无参数）：
 
 - ✅ **调用成功** → MCP 已连接，正常进入第一步，告知用户"🎙️ edge-tts 已就绪，可以直接生成音频"
 - ❌ **调用失败 / 工具不存在** → MCP 未连接，输出以下安装引导后**仍继续执行**（降级为纯文字脚本模式）：
@@ -104,7 +94,11 @@ tool_search(query="edge-tts list voices")
 
 ---
 
-## 第三步A：单人解说脚本格式
+## 第三步：生成脚本
+
+根据用户在第一步的选择，执行对应格式：
+
+### 方式 A：单人解说脚本
 
 ```
 [片头音乐提示：3秒]
@@ -147,7 +141,7 @@ tool_search(query="edge-tts list voices")
 
 ---
 
-## 第四步B：双人对话脚本格式
+### 方式 B：双人对话脚本
 
 角色设定：
 - **主持人（Host）**：好奇心强的技术爱好者，代表听众提问，用 [H] 标注
