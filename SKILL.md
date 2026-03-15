@@ -1,87 +1,89 @@
 ---
 name: paper-glance
-description: 论文全能处理工具。每当用户上传论文 PDF、粘贴论文文本/摘要、上传音频文件、使用语音输入，或提到"论文"、"paper"、"文献"、"arxiv"时必须使用此 skill。功能包括：深度分析报告、思维导图、审稿意见、宣传推广脚本、播客音频生成、导出 Google Docs。即使用户只说"帮我看这篇论文"、直接上传 PDF 或用语音说出指令也必须触发。
+description: All-in-one academic paper processing tool. Must trigger whenever the user uploads a paper PDF, pastes paper text or abstract, uploads an audio file, uses voice input, or mentions "paper", "research", "literature", "arxiv", or "study". Features include deep analysis report, mind map, peer review, promotional scripts, podcast audio, Google Docs export, and read-aloud output. Trigger even if the user simply says "help me read this paper" or uploads a PDF directly.
 ---
 
-# Paper Glance — 论文全能处理工具
+# Paper Glance — All-in-One Paper Processing Tool
 
-## 第一步：前置检查
+## Step 1: Pre-check
 
-检查用户是否提供了论文内容：
+Check whether the user has provided paper content:
 
-- ✅ 上传了 PDF / 粘贴了文本 / 提供了摘要 → 继续
-- ✅ 上传了音频文件（MP3、M4A、WAV 等）→ 先用 `view` 工具读取 `/mnt/skills/user/paper-glance/modules/00_voice_input.md` 执行转写，再继续
-- ✅ 语音输入已被 Claude Desktop 自动转为文字 → 直接继续
-- ✅ 用语音说出了操作指令（如"帮我分析"、"make a mind map"）但未提供论文 → 读取 `00_voice_input.md` 识别指令，若当前对话已有 `PAPER_CORE` 则直接执行对应模块，否则提示提供论文
-- ❌ 未提供 → 回复："请上传论文 PDF、粘贴论文内容，或直接用语音说出摘要，我来帮你处理。"
-
----
-
-## 第二步：理解论文
-
-使用 `view` 工具读取 `/mnt/skills/user/paper-glance/shared/paper_core.md`，按照其中的提取框架在内部构建 `PAPER_CORE`。
-
-这一步**静默完成，不向用户展示提取过程**。
-
-**字段缺失处理规则**（论文未提供相关信息时）：
-- `title` 缺失 → 用"未知标题"代替
-- `year` 缺失 → 省略年份括号
-- `one_liner` 缺失 → 用一句自行概括的话代替，不留空
-- 其他字段缺失 → 填 `null`，后续模块遇到 `null` 字段时注明"论文未提及"，不捏造内容
+- ✅ Uploaded a PDF / pasted text / provided an abstract → continue
+- ✅ Uploaded an audio file (MP3, M4A, WAV, etc.) → use `view` tool to read `/mnt/skills/user/paper-glance/modules/00_voice_input.md` and run transcription first, then continue
+- ✅ Voice input already transcribed by Claude Desktop → continue directly
+- ✅ Voiced an action command (e.g. "analyze this", "make a mind map") but no paper provided → read `00_voice_input.md` to identify the command; if `PAPER_CORE` already exists in this conversation, execute the corresponding module directly; otherwise prompt the user to provide a paper
+- ❌ Nothing provided → reply: "Please upload a paper PDF, paste the paper content, or speak the abstract aloud — I'll take it from there."
 
 ---
 
-## 第三步：展示菜单，询问用户
+## Step 2: Understand the Paper
 
-论文理解完成后，输出以下固定格式的菜单：
+Use the `view` tool to read `/mnt/skills/user/paper-glance/shared/paper_core.md` and internally build `PAPER_CORE` using the extraction framework defined there.
+
+This step is **done silently — do not show the extraction process to the user.**
+
+**Missing field rules** (when the paper does not provide certain information):
+- `title` missing → use "Untitled Paper"
+- `year` missing → omit the year parentheses
+- `one_liner` missing → write a one-sentence summary yourself, never leave it blank
+- Other fields missing → fill with `null`; downstream modules should note "not mentioned in paper" rather than fabricating content
 
 ---
 
-📄 **已读取论文：**《[title]》（[year]）
+## Step 3: Show Menu
+
+Once the paper is understood, output the following fixed-format menu:
+
+---
+
+📄 **Paper loaded:** *[title]* ([year])
 
 > [one_liner]
 
-**你想用这篇论文做什么？**
+**What would you like to do with this paper?**
 
-| # | 功能 | 说明 |
-|---|------|------|
-| 1 | 📊 深度分析报告 | 方法、实验、创新点的完整学术解读 |
-| 2 | 🧠 思维导图 | Mermaid 思维导图或流程图，无需任何插件，即时渲染 |
-| 3 | 🔍 审稿意见 | 按 Summary / Strengths / Weaknesses / Questions 格式输出 |
-| 4 | 📢 宣传脚本 | 社交媒体推文、公众号摘要、演讲介绍 |
-| 5 | 🎙️ 播客音频 | 单人解说或双人对话脚本，可直接生成 MP3 音频 |
-| 6 | 📤 导出 Google Docs | 将已生成内容整理导出为 Google Docs 文档 |
-| 7 | 🔊 朗读输出 | 用语音朗读刚生成的内容，需 edge-tts MCP |
-| 0 | 全部 | 按 1→5 顺序依次生成所有内容 |
+| # | Feature | Description |
+|---|---------|-------------|
+| 1 | 📊 Deep Analysis | Full academic breakdown: methods, experiments, contributions |
+| 2 | 🧠 Mind Map | Mermaid mind map or flowchart, renders instantly — no plugins needed |
+| 3 | 🔍 Peer Review | Structured review: Summary / Strengths / Weaknesses / Questions |
+| 4 | 📢 Promo Script | Social media posts, blog summary, talk intro, email summary |
+| 5 | 🎙️ Podcast | Solo or two-host script, can generate MP3 audio |
+| 6 | 📤 Export to Google Docs | Export generated content as a Google Doc |
+| 7 | 🔊 Read Aloud | Read the generated output aloud via TTS |
+| 0 | All | Generate all features in order: 1 → 2 → 3 → 4 → 5 |
 
-回复数字即可，也可以说"帮我做审稿"这样的自然语言，或直接用语音说出指令。
-
----
-
-## 第四步：执行对应模块
-
-根据用户选择，使用 `view` 工具读取对应模块文件并执行：
-
-| 选择 | 读取文件（使用 view 工具） |
-|------|---------|
-| 音频文件 / 语音命令 | `/mnt/skills/user/paper-glance/modules/00_voice_input.md` |
-| 1 / 分析 | `/mnt/skills/user/paper-glance/modules/01_analysis.md` |
-| 2 / 思维导图 | `/mnt/skills/user/paper-glance/modules/02_mindmap.md` |
-| 3 / 审稿 | `/mnt/skills/user/paper-glance/modules/03_review.md` |
-| 4 / 宣传 | `/mnt/skills/user/paper-glance/modules/04_promo.md` |
-| 5 / 播客 | `/mnt/skills/user/paper-glance/modules/05_podcast.md` |
-| 6 / 导出 | `/mnt/skills/user/paper-glance/modules/06_export_gdoc.md` |
-| 7 / 朗读 | `/mnt/skills/user/paper-glance/modules/07_read_aloud.md` |
-| 0 / 全部 | 依次用 view 工具读取 01→02→03→04→05 全部模块并执行 |
-
-执行完成后，询问："还需要做其他的吗？"（展示剩余选项），并在末尾附加：
-> 🔊 想听朗读？回复 **7** 朗读刚生成的内容。
-> 📤 对结果满意？回复 **6** 可将已生成内容导出到 Google Docs。
+Reply with a number, or say what you want naturally (e.g. "write me a review", "make a podcast").
 
 ---
 
-- `PAPER_CORE` 在整个对话中保持有效，切换模块时**不重新读论文**
-- 用户如果直接说"帮我审稿"、"生成思维导图"、"做个播客"等（文字或语音），跳过菜单直接执行对应模块
-- 用户如果上传了新论文或新音频，重新执行第二步更新 `PAPER_CORE`
-- 播客模块（5）需要 edge-tts MCP 已连接才能生成音频；若未连接，仅输出文字脚本
-- 语音输入模块（00）处理音频转写和语音命令识别；Claude Desktop 内置语音转文字无需额外配置
+## Step 4: Execute the Corresponding Module
+
+Based on the user's selection, use the `view` tool to read and execute the corresponding module file:
+
+| Selection | File to read (use view tool) |
+|-----------|------------------------------|
+| Audio file / voice command | `/mnt/skills/user/paper-glance/modules/00_voice_input.md` |
+| 1 / analysis | `/mnt/skills/user/paper-glance/modules/01_analysis.md` |
+| 2 / mind map | `/mnt/skills/user/paper-glance/modules/02_mindmap.md` |
+| 3 / review | `/mnt/skills/user/paper-glance/modules/03_review.md` |
+| 4 / promo | `/mnt/skills/user/paper-glance/modules/04_promo.md` |
+| 5 / podcast | `/mnt/skills/user/paper-glance/modules/05_podcast.md` |
+| 6 / export | `/mnt/skills/user/paper-glance/modules/06_export_gdoc.md` |
+| 7 / read aloud | `/mnt/skills/user/paper-glance/modules/07_read_aloud.md` |
+| 0 / all | Read modules 01 → 02 → 03 → 04 → 05 in sequence and execute each |
+
+After executing, ask: "Anything else you'd like?" (show remaining options), and append:
+> 🔊 Want to hear it read aloud? Reply **7** to listen to the output just generated.
+> 📤 Happy with the results? Reply **6** to export everything to Google Docs.
+
+---
+
+- `PAPER_CORE` remains valid throughout the conversation — **do not re-read the paper** when switching modules
+- If the user directly says "write me a review", "generate a mind map", "make a podcast", etc. (typed or spoken), skip the menu and execute the corresponding module directly
+- If the user uploads a new paper or audio file, re-run Step 2 to update `PAPER_CORE`
+- Podcast module (5) requires edge-tts MCP to generate audio; without it, output text script only
+- Read-aloud module (7) requires edge-tts MCP; without it, show setup instructions
+- Voice input module (00) handles audio transcription and voice command recognition; Claude Desktop's built-in STT requires no extra configuration
+- **Always output in English**, regardless of the paper's language

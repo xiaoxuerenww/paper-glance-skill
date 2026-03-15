@@ -1,67 +1,76 @@
-# Paper Core — 论文理解共享层
+# Paper Core — Shared Extraction Layer
 
-所有子模块都依赖这里提取的内容。入口 SKILL.md 读取论文后，填充以下结构，后续模块直接复用，**不重复读论文**。
+All modules depend on content extracted here. After reading the paper, the entry point (SKILL.md) populates the following structure. Subsequent modules reuse it directly — **do not re-read the paper**.
 
-## 提取框架
+## Extraction Framework
 
-读取论文后，在内部构建以下「论文核心卡片」（不直接展示给用户，作为所有后续模块的原材料）：
+After reading the paper, internally build the following "Paper Core Card" (not shown directly to the user — it is the raw material for all downstream modules):
 
 ```
 PAPER_CORE = {
 
-  # ── 基本信息 ──────────────────────────────────────────
-  title:        论文标题（英文原文）
-  year:         发表年份
-  venue:        发表期刊/会议（如 NeurIPS 2024、Nature、CVPR 2023）
-  authors:      作者列表（简写，如 "Zhang et al." 或列出前三位）
-  paper_type:   论文类型（方法论文 / 分析论文 / 综述 / 应用论文 / 数据集论文）
-  open_source:  代码/数据是否开源？（是/否/部分），附链接（如有）
-  arxiv:        arXiv 链接或 DOI（如有）
+  # ── Basic Info ─────────────────────────────────────────
+  title:        Paper title (original English)
+  year:         Publication year
+  venue:        Journal or conference (e.g. NeurIPS 2024, Nature, CVPR 2023)
+  authors:      Author list (abbreviated, e.g. "Zhang et al." or first three)
+  paper_type:   Type (Methods paper / Analysis paper / Survey / Application paper / Dataset paper)
+  open_source:  Is code/data open-sourced? (Yes / No / Partial), with link if available
+  arxiv:        arXiv link or DOI (if available)
 
-  # ── 核心内容 ──────────────────────────────────────────
-  one_liner:    一句话核心思想，≤20字，不用术语
-                例："让小模型通过蒸馏学习大模型的推理过程"
+  # ── Core Content ───────────────────────────────────────
+  one_liner:    Core idea in one sentence, ≤15 words, no jargon
+                Example: "Small models learn reasoning from large models via distillation"
 
-  problem:      这篇论文要解决什么问题？（2-3句，口语化，说清楚为什么这个问题难）
-  prior_work:   现有主流方法是什么？它们的核心局限在哪里？（2-4句，具体方法名）
-  hypothesis:   本文的核心假设是什么？（1-2句，即"我们认为…所以…"）
-  insight:      核心洞察/创新点（2-4条，每条一句，具体而非泛泛）
-  contributions:论文明确声称的贡献列表（直接来自原文 Introduction，逐条列出）
+  problem:      What problem does this paper solve? (2–3 sentences, plain language,
+                explain why the problem is hard)
+  prior_work:   What are the dominant existing methods? What are their core limitations?
+                (2–4 sentences, name specific methods)
+  hypothesis:   What is the paper's core assumption? (1–2 sentences, i.e. "We believe… therefore…")
+  insight:      Core insights / innovations (2–4 items, one sentence each, specific not vague)
+  contributions:Contributions as explicitly stated in the paper (taken directly from Introduction,
+                listed verbatim)
 
-  # ── 方法 ──────────────────────────────────────────────
-  method:       方法流程概述（4-6步，每步一句，含关键技术细节）
-  key_modules:  核心模块/组件列表，每个模块一句话说明其作用
-                例：["Cross-Attention层：融合多模态特征", "动态路由：根据输入自适应选择路径"]
-  datasets:     使用的数据集列表（名称 + 规模 + 用途，如训练/验证/测试）
-  metrics:      评估指标列表（名称 + 含义，如 "BLEU-4：衡量生成文本与参考文本的n-gram重叠"）
+  # ── Method ─────────────────────────────────────────────
+  method:       Method pipeline overview (4–6 steps, one sentence each, with key technical details)
+  key_modules:  List of core modules/components, one sentence per module explaining its role
+                Example: ["Cross-Attention: fuses multimodal features",
+                          "Dynamic routing: adaptively selects path based on input"]
+  datasets:     Datasets used (name + scale + purpose, e.g. train / val / test)
+  metrics:      Evaluation metrics (name + meaning, e.g. "BLEU-4: measures n-gram overlap
+                between generated and reference text")
 
-  # ── 实验结果 ──────────────────────────────────────────
-  result:       最重要的实验结论（3-5条，每条含具体数字 + 对比基线）
-                例："在 ImageNet 上达到 87.3% Top-1 准确率，比 ViT-L 高 2.1%"
-  ablation:     消融实验的关键发现（哪个模块/设计最关键？去掉后掉了多少？）
-  failure_case: 方法在哪些情况下表现不好？（如有 failure analysis）
+  # ── Experimental Results ────────────────────────────────
+  result:       Most important experimental findings (3–5 items, each with specific numbers
+                and comparison baseline)
+                Example: "Achieves 87.3% Top-1 accuracy on ImageNet, +2.1% over ViT-L"
+  ablation:     Key findings from ablation study (which module/design matters most?
+                how much does performance drop without it?)
+  failure_case: Cases where the method performs poorly (if failure analysis is included)
 
-  # ── 评估与展望 ────────────────────────────────────────
-  significance: 为什么重要？对哪个领域/人群有用？可能带来什么影响？
-  limitation:   主要局限性（诚实指出，包括作者自己承认的和读者能看出的）
-  future_work:  作者提出的未来研究方向（来自原文 Conclusion/Future Work）
-  prerequisites:读懂这篇论文需要哪些前置知识？（列出2-4个关键概念）
+  # ── Assessment & Outlook ───────────────────────────────
+  significance: Why does it matter? Who benefits? What impact might it have?
+  limitation:   Main limitations (honest, including both author-acknowledged and reader-visible)
+  future_work:  Future directions proposed by the authors (from Conclusion / Future Work)
+  prerequisites:Background knowledge needed to understand the paper (list 2–4 key concepts)
 
-  # ── 创意模块专用 ──────────────────────────────────────
-  fun_fact:     反直觉的发现、意外失败、有趣的消融结果（是播客和漫画的好素材，可留空）
-  key_concepts: [术语1, 术语2, ...]  # 论文中的关键技术词汇，附简短中文解释
-  analogy:      一个生活化类比，帮助非专业人士理解核心方法
-                例："就像把一本厚教材压缩成一页思维导图，但保留最重要的推理逻辑"
+  # ── Creative Modules ────────────────────────────────────
+  fun_fact:     Counter-intuitive findings, unexpected failures, interesting ablation results
+                (great material for podcasts; can be left null if none found)
+  key_concepts: [term1, term2, ...]  # Key technical terms in the paper with brief explanations
+  analogy:      A real-world analogy that helps non-experts understand the core method
+                Example: "Like compressing a thick textbook into a one-page mind map,
+                          but retaining the most important reasoning logic"
 }
 ```
 
-## 提取原则
+## Extraction Principles
 
-- `one_liner` 和 `analogy` 是后续所有创意模块的基础，必须认真写，不能敷衍
-- 所有数字必须来自论文原文，不能估算或捏造
-- `contributions` 直接从原文 Introduction 里找，不要自己总结替换
-- `fun_fact` 优先找：反直觉结果、意外失败、有趣的消融实验、作者自己也觉得surprising的发现
-- `ablation` 是理解方法设计动机的关键，尽量填写
-- 如果是**综述类论文**：`method` 改为"覆盖的主要研究方向"，`key_modules` 改为"主要子领域"
-- 如果是**数据集论文**：重点填写 `datasets` 和 `metrics`，`method` 描述数据收集/标注流程
-- 字段找不到时填 `null`，不要捏造内容
+- `one_liner` and `analogy` are the foundation of all creative modules — write them carefully, never be vague
+- All numbers must come from the paper; do not estimate or fabricate
+- `contributions` should be taken verbatim from the Introduction — do not paraphrase or substitute
+- For `fun_fact`, prioritize: counter-intuitive results, unexpected failures, surprising ablation findings, things the authors themselves found surprising
+- `ablation` is key for understanding design motivation — fill it whenever possible
+- For **survey papers**: replace `method` with "main research directions covered", replace `key_modules` with "main sub-fields"
+- For **dataset papers**: focus on `datasets` and `metrics`; `method` describes the data collection / annotation process
+- If a field cannot be found, fill with `null` — never fabricate content

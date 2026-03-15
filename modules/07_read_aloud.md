@@ -1,119 +1,117 @@
-# 模块 7：🔊 朗读输出
+# Module 7: 🔊 Read Aloud
 
-将当前模块生成的内容通过 edge-tts MCP 朗读出来。与播客模块（5）不同：
-- **模块 5（播客）**：将论文重新改写为叙事脚本再生成音频
-- **模块 7（朗读）**：直接朗读刚刚生成的输出内容，不改写
+Read the current module's generated output aloud using the edge-tts MCP. This is distinct from the podcast module:
+- **Module 5 (Podcast)**: rewrites the paper into a narrative script, then generates audio
+- **Module 7 (Read Aloud)**: reads the actual generated output as-is, no rewriting
 
 ---
 
-## 第零步：检测 edge-tts MCP 是否可用
+## Step 0: Detect edge-tts MCP Availability
 
-尝试调用 `edge-tts:list_voices` 工具（无参数）：
+Try calling `edge-tts:list_voices` (no parameters):
 
-- ✅ **调用成功** → MCP 已连接，进入第一步
-- ❌ **调用失败** → 提示安装引导（同模块 5），**不继续执行**
+- ✅ **Call succeeds** → MCP connected; proceed to Step 1
+- ❌ **Call fails** → Show setup instructions (same as Module 5); **do not continue**
 
-### MCP 未连接时的提示
+### When edge-tts MCP is not connected
 
-> ⚠️ **未检测到 edge-tts MCP，无法朗读。**
+> ⚠️ **edge-tts MCP not detected — read-aloud is unavailable.**
 >
-> 如需启用朗读功能，请安装 edge-tts MCP：
+> To enable this feature, install the edge-tts MCP:
 >
-> **第一步：确认 `uvx` 已安装**
+> **Step 1: Confirm `uvx` is installed**
 > ```bash
 > which uvx
 > ```
-> 没有输出？运行：
+> No output? Run:
 > ```bash
 > curl -LsSf https://astral.sh/uv/install.sh | sh
 > ```
 >
-> **第二步：在 Claude Desktop 配置文件中添加**
+> **Step 2: Add to your Claude Desktop config file**
 >
-> 路径：
-> - macOS：`~/Library/Application Support/Claude/claude_desktop_config.json`
-> - Windows：`%APPDATA%\Claude\claude_desktop_config.json`
+> Config file location:
+> - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+> - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 >
 > ```json
 > "edge-tts": {
->   "command": "/替换为uvx完整路径/uvx",
+>   "command": "/replace-with-full-uvx-path/uvx",
 >   "args": ["better-tts-mcp"]
 > }
 > ```
-> 💡 用 `which uvx` 的结果替换路径，重启 Claude Desktop 后生效。
+> 💡 Replace the path with the output of `which uvx`. Restart Claude Desktop to take effect.
 
 ---
 
-## 第一步：确认朗读内容和语音设置
+## Step 1: Confirm Content and Voice Settings
 
-询问用户：
+Ask the user:
 
-> "需要朗读哪些内容？
-> 1. 只读摘要 / 核心结论（约1-2分钟）
-> 2. 完整输出内容（按生成顺序朗读）
+> "What would you like me to read aloud?
+> 1. Summary / key conclusions only (approx. 1–2 min)
+> 2. Full output (read everything generated, in order)
 >
-> 语音偏好？
-> - A) 🧑 男声（zh-CN-YunxiNeural，自然活泼）
-> - B) 👩 女声（zh-CN-XiaoxiaoNeural，沉稳清晰）
-> - C) 英文男声（en-US-GuyNeural）
-> - D) 英文女声（en-US-JennyNeural）
+> Voice preference?
+> - A) 🧑 Male voice (en-US-GuyNeural, natural and energetic)
+> - B) 👩 Female voice (en-US-JennyNeural, calm and clear)
 >
-> 音频保存到哪个目录？（默认 `/tmp`，请提供完整绝对路径）"
+> Where should the audio be saved? (Default: `/tmp` — provide a full absolute path)"
 
-若用户未指定，默认：完整内容 + 女声（zh-CN-XiaoxiaoNeural）+ 保存至 `/tmp`。
-
----
-
-## 第二步：预处理朗读文本
-
-将要朗读的内容做以下处理，**使语音更自然**：
-
-| 原内容类型 | 处理方式 |
-|-----------|---------|
-| Markdown 标题（`###`） | 转为朗读停顿："---（模块名称）---" |
-| 表格 | 转为逐行口语描述，如"方法一：XXX，优点：YYY" |
-| Mermaid 代码块 | 替换为："（此处为思维导图，已跳过朗读）" |
-| 代码块 | 替换为："（此处为代码，已跳过朗读）" |
-| 加粗 `**text**` | 去掉 markdown 符号，保留文字 |
-| URL / 链接 | 替换为："（链接已省略）" |
-| 数字列表 | 朗读为："第一，… 第二，…" |
-
-处理后预估朗读时长（按 150字/分钟 计算），告知用户：
-> "准备朗读，预估时长约 X 分钟，保存至 [路径]，确认开始？"
+If not specified, default to: full content + female voice (en-US-JennyNeural) + save to `/tmp`.
 
 ---
 
-## 第三步：生成音频
+## Step 2: Pre-process Text for Speech
 
-调用 `edge-tts:text_to_speech`：
+Apply the following transformations to make the audio sound natural:
+
+| Original content type | Treatment |
+|----------------------|-----------|
+| Markdown headings (`###`) | Convert to a spoken pause: "--- [Section Name] ---" |
+| Tables | Convert to row-by-row spoken descriptions, e.g. "Method one: XXX. Strength: YYY." |
+| Mermaid code blocks | Replace with: "(Mind map diagram — skipped for audio)" |
+| Other code blocks | Replace with: "(Code block — skipped for audio)" |
+| Bold `**text**` | Strip markdown symbols, keep the text |
+| URLs / links | Replace with: "(link omitted)" |
+| Numbered lists | Read as: "First, … Second, …" |
+
+After processing, estimate the reading time (at ~130 words/minute) and tell the user:
+> "Ready to read aloud — estimated length: X minutes. Saving to [path]. Confirm?"
+
+---
+
+## Step 3: Generate Audio
+
+Call `edge-tts:text_to_speech`:
 
 ```
-voice:      用户选择的声音（默认 zh-CN-XiaoxiaoNeural）
-rate:       +0%（正常语速，朗读报告不需要加速）
-text:       第二步处理后的文本
-output_dir: 用户指定路径（默认 /tmp）
+voice:      user-selected voice (default: en-US-JennyNeural)
+rate:       +0% (normal speed — reports should not be rushed)
+text:       processed text from Step 2
+output_dir: user-specified path (default: /tmp)
 ```
 
-文件命名：`readout_[模块编号]_[论文简称]_[日期].mp3`
+Filename: `readout_[module-number]_[paper-short-title]_[date].mp3`
 
-示例：`readout_01_attention_20240315.mp3`
+Example: `readout_01_attention_20240315.mp3`
 
 ---
 
-## 第四步：完成后提示
+## Step 4: After Generation
 
-> "🔊 朗读音频已生成：[文件路径]
+> "🔊 Read-aloud audio generated: [file path]
 >
-> 还需要：
-> - 🔄 重新朗读（换语音 / 换内容范围）
-> - 📤 导出完整文档（模块 6）
-> - 🎙️ 生成播客版本（模块 5，内容会重新改写为对话风格）"
+> Would you also like:
+> - 🔄 Re-read (different voice or content range)
+> - 📤 Export full document (Module 6)
+> - 🎙️ Podcast version (Module 5 — rewrites content into a conversational narrative)"
 
 ---
 
-## 质量要求
+## Quality Requirements
 
-- Mermaid 和代码块**必须跳过**，不朗读原始符号
-- 表格转为口语，不逐字朗读 `|` 符号
-- 朗读语速保持正常（`+0%`），避免过快导致难以听懂
-- 生成前**必须告知预估时长**，长内容（>5分钟）需用户确认
+- Mermaid and code blocks **must be skipped** — never read raw symbols aloud
+- Tables must be converted to spoken sentences — never read `|` characters
+- Keep reading speed at normal pace (`+0%`) — faster rates make reports hard to follow
+- **Always show estimated duration** before generating; require confirmation for content > 5 minutes

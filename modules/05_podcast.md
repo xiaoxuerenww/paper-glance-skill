@@ -1,272 +1,256 @@
-# 模块 5：🎙️ 播客脚本 + 音频生成
+# Module 5: 🎙️ Podcast Script + Audio Generation
 
-将论文转化为可直接播出的播客内容，结合 edge-tts MCP 生成 MP3 音频文件。
-
----
-
-## 第零步：检测 edge-tts MCP 是否可用
-
-**在询问任何播客形式之前，必须先完成此检测。**
-
-### 0a. 检测 MCP 连接状态
-
-尝试调用 `edge-tts:list_voices` 工具（无参数）：
-
-- ✅ **调用成功** → MCP 已连接，正常进入第一步，告知用户"🎙️ edge-tts 已就绪，可以直接生成音频"
-- ❌ **调用失败 / 工具不存在** → MCP 未连接，输出以下安装引导后**仍继续执行**（降级为纯文字脚本模式）：
+Transform the paper into ready-to-air podcast content, and optionally generate an MP3 using the edge-tts MCP. **Output entirely in English.**
 
 ---
 
-### MCP 未连接时的提示内容
+## Step 0: Detect edge-tts MCP Availability
 
-> ⚠️ **未检测到 edge-tts MCP，本次只能输出文字脚本。**
+**Complete this check before asking about podcast format.**
+
+Try calling `edge-tts:list_voices` (no parameters):
+
+- ✅ **Call succeeds** → MCP connected; proceed to Step 1 and tell the user: "🎙️ edge-tts is ready — audio can be generated directly"
+- ❌ **Call fails / tool not found** → MCP not connected; show setup instructions below, then **continue in text-script-only mode**
+
+---
+
+### When edge-tts MCP is not connected
+
+> ⚠️ **edge-tts MCP not detected — text script only for this session.**
 >
-> 如需生成 MP3 音频，请按以下步骤安装：
+> To generate MP3 audio, follow these steps:
 >
-> **第一步：确认 `uvx` 已安装**
+> **Step 1: Confirm `uvx` is installed**
 > ```bash
 > which uvx
 > ```
-> 没有输出？运行以下命令安装：
+> No output? Install it:
 > ```bash
 > curl -LsSf https://astral.sh/uv/install.sh | sh
 > ```
 >
-> **第二步：在 Claude Desktop 配置文件中添加以下内容**
+> **Step 2: Add the following to your Claude Desktop config file**
 >
-> 配置文件路径：
-> - macOS：`~/Library/Application Support/Claude/claude_desktop_config.json`
-> - Windows：`%APPDATA%\Claude\claude_desktop_config.json`
+> Config file location:
+> - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+> - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 >
-> 在 `mcpServers` 中添加：
+> Add to `mcpServers`:
 > ```json
 > "edge-tts": {
->   "command": "/替换为uvx完整路径/uvx",
+>   "command": "/replace-with-full-uvx-path/uvx",
 >   "args": ["better-tts-mcp"]
 > }
 > ```
-> > 💡 用 `which uvx` 的输出替换上方路径，例如 `/Users/yourname/.local/bin/uvx`
+> 💡 Replace the path with the output of `which uvx`, e.g. `/Users/yourname/.local/bin/uvx`
 >
-> **第三步：重启 Claude Desktop，重新打开对话即可。**
+> **Step 3: Restart Claude Desktop and reopen this conversation.**
 >
 > ---
-> 现在继续为你生成文字脚本，安装完成后重新运行即可直接生成音频 👇
+> Continuing with text script now — once installed, re-run to generate audio directly 👇
 
 ---
 
-## 第一步：询问播客形式和输出目录
+## Step 1: Ask for Podcast Format and Output Directory
 
-> "需要哪种播客形式？
-> A) 🎤 单人解说（主播独白，科普风格，适合个人播客）
-> B) 🎭 双人对话（主持人 × 研究员，问答互动，更有代入感）
+> "Which podcast format would you like?
+> A) 🎤 Solo narration (single host, science-explainer style)
+> B) 🎭 Two-host dialogue (host × expert, Q&A format, more engaging)
 >
-> 时长偏好？
-> - 短版（约5分钟，800-1000字脚本）
-> - 长版（约12分钟，2000-2500字脚本）
+> Length preference?
+> - Short (approx. 5 min, 800–1000 word script)
+> - Long (approx. 12 min, 2000–2500 word script)
 >
-> 音频保存到哪个目录？请给出完整绝对路径，例如 `/Users/你的用户名/Desktop`。不指定则默认 `/tmp`。"
+> Where should the audio be saved? Provide a full absolute path, e.g. `/Users/yourname/Desktop`. Default is `/tmp`."
 
-若用户未指定形式，默认：双人对话 + 短版。
-若用户未指定目录，默认：`/tmp`（生成后提供 `cp` 命令方便移动）。
-
----
-
-## 第二步：构建播客内容骨架
-
-播客必须覆盖以下核心维度，**按重要性排序**从 PAPER_CORE 取材：
-
-| 播客段落 | 来源字段 | 重要性 |
-|---------|---------|--------|
-| 开场钩子 | `fun_fact` / `one_liner` | ⭐⭐⭐ 必须有冲击力 |
-| 问题背景 | `problem` + `prior_work` | ⭐⭐⭐ 听众要先理解痛点 |
-| 核心洞察 | `insight` + `hypothesis` + `analogy` | ⭐⭐⭐ 播客灵魂所在 |
-| 方法解读 | `method` + `key_modules` | ⭐⭐ 口语化，不讲公式 |
-| 关键结果 | `result` + `ablation` | ⭐⭐⭐ 数字要有对比语境 |
-| 意义与展望 | `significance` + `future_work` | ⭐⭐ 给听众留下思考 |
-| 局限性 | `limitation` + `failure_case` | ⭐ 增加可信度，不回避 |
-
-> ⚠️ 播客写作铁律：
-> - **禁止公式**，所有数学表达转为口语类比
-> - **禁止列表朗读**，改为自然过渡句
-> - 每个数字都要有对比语境："比之前最好的方法高了3%，相当于…"
-> - `analogy` 字段是核心武器，必须用上
-> - `fun_fact` 优先放开场，没有则从 `result` 里找最反直觉的发现
+If not specified: default to two-host dialogue + short version.
+If no directory given: default to `/tmp` (provide a `cp` command after generation).
 
 ---
 
-## 第三步：生成脚本
+## Step 2: Build the Podcast Content Skeleton
 
-根据用户在第一步的选择，执行对应格式：
+The podcast must cover the following dimensions, drawn from PAPER_CORE in priority order:
 
-### 方式 A：单人解说脚本
+| Segment | Source fields | Priority |
+|---------|--------------|----------|
+| Opening hook | `fun_fact` / `one_liner` | ⭐⭐⭐ must be punchy |
+| Problem background | `problem` + `prior_work` | ⭐⭐⭐ audience needs to feel the pain first |
+| Core insight | `insight` + `hypothesis` + `analogy` | ⭐⭐⭐ the soul of the episode |
+| Method walkthrough | `method` + `key_modules` | ⭐⭐ conversational, no formulas |
+| Key results | `result` + `ablation` | ⭐⭐⭐ numbers need comparison context |
+| Significance & outlook | `significance` + `future_work` | ⭐⭐ leave the listener thinking |
+| Limitations | `limitation` + `failure_case` | ⭐ builds credibility, don't skip |
+
+> ⚠️ Podcast writing rules:
+> - **No formulas** — convert all math to conversational analogies
+> - **No list-reading** — use natural transition sentences
+> - Every number needs comparison context: "3% better than the previous best — that's like…"
+> - `analogy` is the core weapon — always use it
+> - Lead with `fun_fact`; if null, find the most counter-intuitive result in `result`
+
+---
+
+## Step 3: Generate Script
+
+Based on the user's choice in Step 1:
+
+### Format A: Solo Narration Script
 
 ```
-[片头音乐提示：3秒]
+[Intro music cue: 3 seconds]
 
-[开场 - 30秒]
-大家好，欢迎收听。今天我们聊一篇让我眼前一亮的论文——
-[PAPER_CORE.one_liner 的口语化版本]
-[PAPER_CORE.fun_fact 或最反直觉的发现，制造悬念]
+[Opening - 30 sec]
+Welcome back. Today we're looking at a paper that caught my attention —
+[PAPER_CORE.one_liner rephrased conversationally]
+[PAPER_CORE.fun_fact or most counter-intuitive finding, to build suspense]
 
-[问题背景 - 60秒]
-在聊这篇论文之前，我们先搞清楚它在解决什么问题。
-[PAPER_CORE.problem 的口语化展开]
-[PAPER_CORE.prior_work 的现有方法局限，1-2句]
-所以，有没有更好的办法？这篇论文给出了一个很有意思的答案。
+[Problem background - 60 sec]
+Before we get into the paper, let's set the scene — what problem is this solving?
+[PAPER_CORE.problem expanded conversationally]
+[PAPER_CORE.prior_work limitations, 1–2 sentences]
+So — is there a better way? This paper offers a pretty interesting answer.
 
-[核心方法 - 90秒]
-他们的核心思路是这样的——
-[PAPER_CORE.analogy 完整展开，先讲类比再讲技术]
-具体来说，[PAPER_CORE.method 的口语化步骤，3-4步，每步一句]
-其中最关键的一个设计是 [PAPER_CORE.key_modules 中最重要的一个，口语化解释]
+[Core method - 90 sec]
+Here's the key idea behind their approach —
+[PAPER_CORE.analogy fully expanded, analogy first then technical detail]
+Specifically, [PAPER_CORE.method as conversational steps, 3–4 steps, one sentence each]
+The most critical design choice is [most important item from PAPER_CORE.key_modules, plain language]
 
-[实验结果 - 60秒]
-那效果怎么样？
-[PAPER_CORE.result 中最重要的1-2条，数字+对比语境]
-他们还做了一个很有意思的实验：[PAPER_CORE.ablation 的口语化描述]
+[Results - 60 sec]
+So how well does it work?
+[PAPER_CORE.result top 1–2 findings, with numbers and comparison context]
+They also ran an interesting experiment: [PAPER_CORE.ablation rephrased conversationally]
 
-[意义与局限 - 40秒]
-这项工作的价值在于——[PAPER_CORE.significance]
-当然，它也有局限：[PAPER_CORE.limitation，1句，客观]
+[Significance & limitations - 40 sec]
+Why does this matter? [PAPER_CORE.significance]
+That said, it's not without limits: [PAPER_CORE.limitation, 1 sentence, honest]
 
-[结尾 - 20秒]
-好了，这就是今天的内容。用一句话总结这篇论文：
+[Outro - 20 sec]
+That's it for today. One sentence to sum up this paper:
 [PAPER_CORE.one_liner]
-感兴趣的朋友可以搜索原文 [PAPER_CORE.title]。我们下期再见。
+If you want to dig deeper, search for [PAPER_CORE.title]. See you next time.
 
-[片尾音乐提示：3秒]
+[Outro music cue: 3 seconds]
 ```
 
-**时长控制**：短版输出开场+问题背景+核心方法+结果+结尾；长版全部段落展开。
+**Length control**: Short version = opening + background + method + results + outro; long version = all segments fully expanded.
 
 ---
 
-### 方式 B：双人对话脚本
+### Format B: Two-Host Dialogue Script
 
-角色设定：
-- **主持人（Host）**：好奇心强的技术爱好者，代表听众提问，用 [H] 标注
-- **研究员（Expert）**：论文领域专家，负责深度解释，用 [E] 标注
+Character setup:
+- **Host [H]**: curious tech enthusiast, asks questions on behalf of the audience
+- **Expert [E]**: domain specialist, provides in-depth explanations
 
 ```
-[H] 开场白 + 引出论文话题（用 fun_fact 或反直觉问题制造悬念）
+[H] Opening + introduce the topic (use fun_fact or a counter-intuitive question to create suspense)
 
-[E] 接梗，简短确认这个研究方向的有趣之处
+[E] Pick up the thread, briefly confirm what makes this research interesting
 
-[H] "那在这篇论文出来之前，大家是怎么处理这个问题的？"
+[H] "So before this paper, how were people handling this problem?"
 
-[E] 介绍 prior_work，指出核心痛点（口语，具体）
+[E] Describe prior_work, point out the core limitations (conversational, specific)
 
-[H] "所以这篇论文的思路是什么？用普通人能理解的方式说说？"
+[H] "So what's the new idea here? Explain it like I'm not an expert."
 
-[E] 用 analogy 解释，再逐步引入 method（先类比后技术）
+[E] Use analogy to explain, then gradually introduce method (analogy first, then technical)
 
-[H] 提出一个听众会有的疑问（来自 PAPER_CORE.hypothesis 或 key_modules 中最难理解的部分）
+[H] Raise a question the audience would naturally have (from PAPER_CORE.hypothesis or the hardest-to-grasp key_module)
 
-[E] 回答，可适当补充 key_modules 细节
+[E] Answer, optionally adding key_modules detail
 
-[H] "那实验结果呢？真的比之前的方法好吗？"
+[H] "How do the numbers look? Is it actually better than what came before?"
 
-[E] 报告 result（最重要的1-2个数字），给出对比语境，引用 ablation 的有趣发现
+[E] Report result (top 1–2 numbers) with comparison context; mention interesting ablation finding
 
-[H] "听起来很厉害，那有没有什么局限性？做不到的事情？"
+[H] "Sounds impressive — but are there things it still can't do?"
 
-[E] 客观说明 limitation 和 failure_case，体现学术诚实
+[E] Honestly describe limitation and failure_case — academic honesty matters
 
-[H] "最后，你觉得这个工作最值得关注的地方是什么？"
+[H] "Last question — what do you think is the most important takeaway from this work?"
 
-[E] 总结 significance + future_work，用 one_liner 收尾
+[E] Summarize significance + future_work, close with one_liner
 
-[H] 感谢 + 片尾语
+[H] Thanks + outro
 ```
 
-**双人对话原则**：
-- [H] 的问题必须是听众真实会有的疑问，不能是"请介绍一下方法"这种串词
-- [E] 的每段回答不超过100字，保持对话节奏
-- 全程禁止出现"首先、其次、最后"这种列举式语气
-- 对话要有来回，[H] 可以追问、表示惊讶、打断补充
+**Two-host dialogue rules**:
+- [H]'s questions must be genuine audience questions — never placeholder lines like "can you describe the method?"
+- [E]'s responses should stay under 80 words each to maintain conversational rhythm
+- Never use "first… second… finally" list-style pacing throughout
+- The dialogue should have back-and-forth energy — [H] can push back, show surprise, or add a follow-up
 
 ---
 
-## 第五步：生成音频（MCP 可用时执行）
+## Step 4: Generate Audio (when MCP is available)
 
-> ⚠️ 若第零步检测到 MCP 不可用，跳过本步骤，直接输出文字脚本并附上安装提示。
+> ⚠️ If Step 0 found MCP unavailable, skip this step and output the text script with setup instructions.
 
-### ⚠️ output_dir 关键说明（必读）
+### ⚠️ Important: output_dir
 
-edge-tts MCP 运行在**用户本地机器**上，写文件时路径是用户本地的文件系统路径，
-**不是** Claude 云端容器的路径（如 `/mnt/user-data/outputs` 或 `/home/claude`）。
+The edge-tts MCP runs on the **user's local machine**. File paths must be local filesystem paths —
+**not** Claude's cloud container paths (e.g. `/mnt/user-data/outputs` or `/home/claude`).
 
-**必须在生成前向用户询问输出目录**，示例话术：
+**Path rules:**
+1. **User provides a path** → use it directly (must be an absolute path)
+2. **User says "default" or doesn't specify** → use `/tmp`, provide a `cp` command after generation
+3. **Never use**: `.` (relative), `~/Desktop` (tilde not expanded by MCP), `/mnt/...`, `/home/claude/...`
 
-> "请告诉我音频保存到哪个目录？请给出**完整绝对路径**，例如：
-> - macOS：`/Users/你的用户名/Desktop`
-> - Windows：`C:\Users\你的用户名\Desktop`
->
-> 如果不确定，我会默认保存到 `/tmp`，生成后你可以手动移动。"
-
-**路径使用规则：**
-1. **用户提供了路径** → 直接使用（必须是绝对路径）
-2. **用户说"默认"或不想指定** → 使用 `/tmp`，生成后提供 `cp` 命令
-3. **如果用户记住了路径** → 可以通过 memory_user_edits 工具记住，下次自动使用
-
-**❌ 绝对不要使用以下路径**（会报 Read-only filesystem 或 Permission denied）：
-- `.`（当前目录，MCP 进程的 cwd 可能只读）
-- `~/Desktop`、`~/Downloads`（`~` 波浪号不会被 MCP 展开，必须用完整路径如 `/Users/xxx/Desktop`）
-- `/mnt/...`、`/home/claude/...`（云端容器路径，MCP 无法访问）
-- `/Users`（根目录无写权限，必须到具体用户子目录）
-
-### 单人音频（调用 edge-tts:text_to_speech）
+### Solo audio (call `edge-tts:text_to_speech`)
 
 ```
-voice: zh-CN-YunxiNeural（男声科普风）或 zh-CN-XiaoxiaoNeural（女声）
-rate: +5%（略快，播客节奏）
-output_dir: /tmp（默认），或用户指定的本地路径
+voice:      en-US-GuyNeural (male, natural) or en-US-JennyNeural (female)
+rate:       +5% (slightly faster, podcast pacing)
+output_dir: /tmp (default) or user-specified local path
 ```
 
-输出文件命名建议：`podcast_[论文简称]_[日期].mp3`
+Suggested filename: `podcast_[paper-short-title]_[date].mp3`
 
-### 双人音频（调用 edge-tts:text_to_speech_multi_voice）
+### Two-host audio (call `edge-tts:text_to_speech_multi_voice`)
 
-Marker 格式：
+Marker format:
 ```
-[zh-CN-YunxiNeural]（主持人台词）
-[zh-CN-XiaoxiaoNeural]（研究员台词）
+[en-US-GuyNeural](Host line)
+[en-US-JennyNeural](Expert line)
 ```
 
-推荐声音搭配：
-- 主持人 [H]：`zh-CN-YunxiNeural`（男声，自然活泼）
-- 研究员 [E]：`zh-CN-XiaoxiaoNeural`（女声，沉稳专业）
-- 或反过来，根据用户偏好调整
+Recommended voice pairing:
+- Host [H]: `en-US-GuyNeural` (male, energetic)
+- Expert [E]: `en-US-JennyNeural` (female, calm and clear)
+- Or swap based on user preference
 
-### 生成前确认
+### Confirm before generating
 
-向用户展示：
-> "准备生成音频：
-> - 形式：[单人/双人]
-> - 预估时长：[X] 分钟
-> - 保存位置：[用户指定的路径 或 /tmp]
-> 确认生成？"
+Show the user:
+> "Ready to generate audio:
+> - Format: [solo / two-host]
+> - Estimated length: [X] minutes
+> - Save location: [user path or /tmp]
+> Confirm?"
 
 ---
 
-## 第六步：生成完成后
+## Step 5: After Generation
 
-提示用户：
-> "🎙️ 播客已生成：[文件路径]
-> 还需要以下配套内容吗？
-> - 📝 文字稿（方便发布到播客平台）
-> - 📢 宣传推文（模块 4）
-> - 🧠 配套思维导图（模块 2，可作为封面/配图）"
+Tell the user:
+> "🎙️ Podcast generated: [file path]
+> Would you also like:
+> - 📝 Transcript (useful for publishing to podcast platforms)
+> - 📢 Promo thread (Module 4)
+> - 🧠 Companion mind map (Module 2, great for cover art or show notes)"
 
 ---
 
-## 质量检查清单
+## Quality Checklist
 
-生成脚本前自查：
-- [ ] `analogy` 已使用（播客灵魂）
-- [ ] `fun_fact` 或反直觉发现在开场（抓住听众）
-- [ ] 所有数字有对比语境
-- [ ] 无公式，无列表式朗读
-- [ ] `limitation` 被诚实提及（增加可信度）
-- [ ] 全文无"首先其次最后"式串联
-- [ ] 双人对话中 [H] 的问题是真实听众问题
+Before generating the script, verify:
+- [ ] `analogy` is used (the soul of the episode)
+- [ ] `fun_fact` or most counter-intuitive finding leads the opening
+- [ ] All numbers have comparison context
+- [ ] No formulas, no list-reading
+- [ ] `limitation` is honestly mentioned
+- [ ] No "first… second… finally" pacing
+- [ ] [H]'s questions are genuine audience questions

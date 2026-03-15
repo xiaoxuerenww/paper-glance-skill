@@ -1,102 +1,102 @@
-# 模块 1：深度分析报告
+# Module 1: 📊 Deep Analysis Report
 
-基于 `PAPER_CORE`，输出完整的学术分析报告。面向研究者，风格专业严谨。
+Based on `PAPER_CORE`, produce a complete academic analysis report. Audience: researchers. Tone: professional and rigorous. **Output entirely in English.**
 
-## 输出结构
+## Output Structure
 
-严格按照以下 7 个部分输出，不得省略。全程中文，术语保留英文原文并附解释。
-
----
-
-### 0. 摘要翻译
-
-将论文摘要原文翻译为中文，保持学术语言风格，不做删减。
+Strictly follow these 7 sections in order. Do not skip any.
 
 ---
 
-### 1. 方法动机
+### 0. Abstract
 
-**a) 提出动机**
-作者为什么要提出这个方法？驱动力和研究背景。
-
-**b) 现有方法的痛点**
-现有主流方法的具体局限性（不泛泛而谈）。
-
-**c) 核心假设与直觉**
-用 2-3 句话概括本文的核心研究假设。
+Reproduce or closely paraphrase the paper's abstract. Keep academic language style; do not summarize or shorten.
 
 ---
 
-### 2. 方法设计
+### 1. Motivation
 
-> ⚠️ 核心部分，必须细致——用户可能不会再读原文。
+**a) Why this paper?**
+What drove the authors to propose this approach? Research background and motivation.
 
-**a) 方法流程（Pipeline）**
-输入 → 每个处理步骤（含技术细节）→ 输出。每步说明：做了什么、为什么、怎么实现。
+**b) Pain points of prior work**
+Specific limitations of existing mainstream methods (be concrete, not vague).
 
-**b) 模块结构**（如有模型/网络结构）
-每个模块的功能，以及各模块如何协同。
-
-**c) 公式与算法解释**（如有）
-通俗解释每个关键公式的含义和作用。
+**c) Core hypothesis and intuition**
+Summarize the paper's central research assumption in 2–3 sentences.
 
 ---
 
-### 3. 与其他方法对比
+### 2. Method Design
 
-**a) 本质区别**：最根本的不同在哪里？
+> ⚠️ This is the most critical section — be thorough. The user may not read the original paper.
 
-**b) 创新点**：核心贡献列表（编号）
+**a) Pipeline**
+Input → each processing step (with technical detail) → output. For each step: what it does, why, and how it's implemented.
 
-**c) 适用场景**：什么情况下更有优势？
+**b) Module architecture** (if a model/network structure exists)
+Each module's function and how they work together.
 
-**d) 对比表格**
-
-| 方法 | 核心思路 | 优点 | 缺点 | 改进点 |
-|------|----------|------|------|--------|
-| 本文方法 | | | | |
-| 对比方法1 | | | | |
-| 对比方法2 | | | | |
+**c) Key formulas and algorithms** (if applicable)
+Plain-language explanation of each key formula's meaning and role.
 
 ---
 
-### 4. 实验表现
+### 3. Comparison with Prior Work
 
-**a) 实验设计**：数据集、基线、评估指标、实验设置
+**a) Fundamental difference**: What is the most essential distinction?
 
-**b) 关键结果**：最具代表性的数据和结论（数字具体）
+**b) Contributions**: Core contributions as a numbered list
 
-**c) 优势场景**：在哪些设置下优势最明显？
+**c) When it works best**: In what settings does this method have the clearest advantage?
 
-**d) 局限性**：泛化能力、计算开销、数据依赖、适用范围限制
+**d) Comparison table**
 
----
-
-### 5. 学习与应用
-
-**a) 开源情况与复现建议**
-
-**b) 实现细节**：超参数、数据预处理、训练技巧
-
-**c) 迁移潜力**：能否迁移到其他任务/领域？
+| Method | Core idea | Strengths | Weaknesses | What this paper improves |
+|--------|-----------|-----------|------------|--------------------------|
+| This paper | | | | |
+| Baseline 1 | | | | |
+| Baseline 2 | | | | |
 
 ---
 
-### 6. 总结
+### 4. Experimental Results
 
-**a) 一句话核心思想**（≤20字，来自 `PAPER_CORE.one_liner`）
+**a) Experimental setup**: datasets, baselines, evaluation metrics, implementation details
 
-**b) 速记版 Pipeline**（3-5步，不用论文术语，直白具体）
+**b) Key results**: most representative numbers and conclusions (be specific)
 
-示例格式：
-1. 输入原始图像，提取多尺度特征
-2. 对每个区域独立计算注意力权重
-3. 将不同尺度的特征加权融合
-4. 输出最终分类结果
+**c) Where it shines**: settings where the advantage is most pronounced
+
+**d) Limitations**: generalization, compute cost, data requirements, scope of applicability
 
 ---
 
-## 输出规范
+### 5. Reproducibility & Applications
 
-- 若论文未涉及某子项，注明"论文未涉及"而非跳过
-- 重点在 Methodology，避免过度展开引言与结论
+**a) Open-source status and reproduction advice**
+
+**b) Implementation details**: hyperparameters, data preprocessing, training tricks
+
+**c) Transfer potential**: can it be applied to other tasks or domains?
+
+---
+
+### 6. Summary
+
+**a) One-liner** (≤15 words, from `PAPER_CORE.one_liner`)
+
+**b) Quick-reference pipeline** (3–5 steps, plain language, no jargon)
+
+Example format:
+1. Take raw image, extract multi-scale features
+2. Compute attention weights independently per region
+3. Fuse features across scales with learned weights
+4. Output final classification
+
+---
+
+## Output Rules
+
+- If the paper does not cover a sub-item, write "Not covered in paper" — do not skip the section
+- Focus depth on Methodology; avoid over-expanding Introduction and Conclusion

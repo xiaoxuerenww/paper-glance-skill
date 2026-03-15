@@ -1,55 +1,55 @@
-# 模块 2：思维导图
+# Module 2: 🧠 Mind Map
 
-将论文核心结构可视化为思维导图，直接输出 Mermaid 代码块，无需任何 MCP 插件，Claude.ai 原生渲染。
+Visualize the paper's core structure as a mind map. Output a Mermaid code block directly — no plugins needed, renders natively in Claude.ai.
 
 ---
 
-## 默认输出：思维导图（mindmap）
+## Default Output: Mind Map (mindmap)
 
-**优先生成思维导图**，除非用户明确要求流程图。
+**Generate the mind map by default**, unless the user explicitly asks for a flowchart.
 
-直接输出 Mermaid mindmap 代码块：
+Output a Mermaid mindmap code block directly:
 
 ````mermaid
 mindmap
-  root((**[论文简称]**))
-    **问题**
-      [现有方法痛点1]
-      [现有方法痛点2]
-    **方法**
-      [核心模块1]
-        [子组件]
-      [核心模块2]
-    **实验**
-      [数据集名称]
-      [关键结论 + 具体数字]
-    **贡献**
-      [创新点1]
-      [创新点2]
-    **局限**
-      [局限性1]
+  root((**[Paper Short Title]**))
+    **Problem**
+      [Pain point of prior work 1]
+      [Pain point of prior work 2]
+    **Method**
+      [Core module 1]
+        [Sub-component]
+      [Core module 2]
+    **Experiments**
+      [Dataset name]
+      [Key result + specific number]
+    **Contributions**
+      [Innovation 1]
+      [Innovation 2]
+    **Limitations**
+      [Limitation 1]
 ````
 
-生成后询问："需要再生成一张**方法流程图**吗？"
+After generating, ask: "Would you also like a **method pipeline flowchart**?"
 
 ---
 
-## 可选：方法流程图（Pipeline）
+## Optional: Method Pipeline Flowchart
 
-若用户需要，额外输出 Mermaid flowchart 代码块：
+If the user requests it, also output a Mermaid flowchart code block:
 
 ````mermaid
 flowchart TD
-    Input["📥 输入\n[输入数据类型]"]
+    Input["📥 Input\n[input data type]"]
 
-    subgraph Method["[论文方法名称]"]
-        Step1["[步骤1名称]\n[一句话描述]"]
-        Step2["[步骤2名称]\n[一句话描述]"]
-        Step3["[步骤3名称]\n[一句话描述]"]
+    subgraph Method["[Paper method name]"]
+        Step1["[Step 1 name]\n[one-sentence description]"]
+        Step2["[Step 2 name]\n[one-sentence description]"]
+        Step3["[Step 3 name]\n[one-sentence description]"]
     end
 
-    Output["📤 输出\n[输出结果]"]
-    Result["📊 关键结果\n[PAPER_CORE.result 关键数字]"]
+    Output["📤 Output\n[output result]"]
+    Result["📊 Key Result\n[PAPER_CORE.result key numbers]"]
 
     Input --> Step1 --> Step2 --> Step3 --> Output --> Result
 
@@ -57,14 +57,13 @@ flowchart TD
     style Result fill:#e8f5e9,stroke:#4CAF50
 ````
 
-根据 `PAPER_CORE.method` 实际步骤数调整节点，用论文真实模块名称，中英文并排标注。
+Adjust the number of nodes to match the actual steps in `PAPER_CORE.method`. Use the paper's real module names.
 
 ---
 
-## 质量要求
+## Quality Requirements
 
-- 所有节点文字必须来自论文原文，不捏造模块
-- 数字来自 `PAPER_CORE.result`，不估算
-- 中英文并排：`注意力机制 / Attention`
-- 思维导图叶子节点控制在 10 字以内
-- 输出为标准 Mermaid 代码块，用户也可复制到 mermaid.live 进一步编辑
+- All node text must come from the paper; do not fabricate modules
+- Numbers must come from `PAPER_CORE.result`; do not estimate
+- Leaf node text should be under 8 words for readability
+- Output as a standard Mermaid code block; user can also copy to [mermaid.live](https://mermaid.live) to edit further
