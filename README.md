@@ -21,8 +21,9 @@
 | 3 | 🔍 审稿意见 | Summary / Strengths / Weaknesses / Questions 专业格式 | 
 | 4 | 📢 宣传脚本 | 推文、公众号摘要、演讲开场白、邮件摘要 |
 | 5 | 🎙️ 播客音频 | 单人/双人播客脚本，可连接 TTS 一键生成 MP3 |
+| 6 | 📤 导出 Google Docs | 将已生成内容一键导出为 Google Docs 文档 |
 
-> 1-4 功能无需 MCP；5 号播客在未连接 [TTS MCP](https://github.com/CatVinci-Studio/better-tts-mcp) 时会自动降级为纯文字脚本。
+> 1-4 功能无需 MCP；5 号播客在未连接 [TTS MCP](https://github.com/CatVinci-Studio/better-tts-mcp) 时会自动降级为纯文字脚本；6 号导出在未连接 Google Drive MCP 时会自动降级为 Markdown 格式输出。
 
 ---
 
@@ -92,6 +93,15 @@ Claude 会自动读取论文，展示功能菜单：
 ### 4 · 📢 宣传脚本
 一键生成多种宣传格式：Twitter/X 推文（含 hashtag）、公众号/知乎摘要、学术演讲开场介绍、邮件摘要。
 
+### 6 · 📤 导出 Google Docs
+
+对结果满意后，回复 **6** 即可将本次对话中已生成的任意内容（可多选）整理导出：
+
+- 若已连接 [Google Drive MCP](https://github.com/modelcontextprotocol/servers/tree/main/src/gdrive)，直接创建 Google Docs 并返回链接
+- 若未连接，自动降级为 Markdown 格式输出，并提供粘贴到 Google Docs 的步骤说明
+
+导出文档包含论文基本信息（标题、作者、年份、一句话摘要）和所选内容，思维导图代码块附 [mermaid.live](https://mermaid.live) 渲染链接。
+
 ### 5 · 🎙️ 播客脚本 + 音频生成
 将论文自动转成可播客化内容，支持两种模式：
 
@@ -118,7 +128,8 @@ paper-glance-skill/
     ├── 02_mindmap.md       # 思维导图 + 流程图
     ├── 03_review.md        # 审稿意见
     ├── 04_promo.md         # 宣传脚本
-    └── 05_podcast.md       # 播客脚本 + 音频生成
+    ├── 05_podcast.md       # 播客脚本 + 音频生成
+    └── 06_export_gdoc.md   # 导出到 Google Docs
 ```
 
 ---
