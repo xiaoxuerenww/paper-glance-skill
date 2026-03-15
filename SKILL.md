@@ -64,7 +64,7 @@ description: 论文全能处理工具。每当用户上传论文 PDF、粘贴论
 | 3 / 审稿 | `/mnt/skills/user/paper-glance/modules/03_review.md` |
 | 4 / 宣传 | `/mnt/skills/user/paper-glance/modules/04_promo.md` |
 | 5 / 播客 | `/mnt/skills/user/paper-glance/modules/05_podcast.md` |
-| 0 / 全部 | 依次用 view 工具读取所有模块 |
+| 0 / 全部 | 依次用 view 工具读取 01→02→03→04→05 全部模块并执行 |
 
 执行完成后，询问："还需要做其他的吗？"（展示剩余选项）
 

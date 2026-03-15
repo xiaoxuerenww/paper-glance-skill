@@ -27,7 +27,7 @@
 🔑 Key insight: [PAPER_CORE.analogy 的精华版]
 
 📄 Paper: [标题]
-🔗 [如有 arxiv 链接则填入]
+🔗 [arxiv 链接（无则省略此行）]
 
 #MachineLearning #AI #[相关领域标签]
 ```
