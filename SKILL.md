@@ -1,6 +1,6 @@
 ---
 name: paper-glance
-description: All-in-one academic paper processing tool. Must trigger whenever the user uploads a paper PDF, pastes paper text or abstract, uploads an audio file, uses voice input, or mentions "paper", "research", "literature", "arxiv", or "study". Features include deep analysis report, mind map, peer review, promotional scripts, podcast audio, Google Docs export, and read-aloud output. Trigger even if the user simply says "help me read this paper" or uploads a PDF directly.
+description: All-in-one academic paper processing tool. Must trigger whenever the user uploads a paper PDF, pastes paper text or abstract, uploads an audio file, uses voice input, or mentions "paper", "research", "literature", "arxiv", or "study". Features include deep analysis report, mind map, peer review, promotional scripts, podcast audio, DOCX export to Downloads/, and read-aloud output. Trigger even if the user simply says "help me read this paper" or uploads a PDF directly.
 ---
 
 # Paper Glance — All-in-One Paper Processing Tool
@@ -50,7 +50,7 @@ Once the paper is understood, output the following fixed-format menu:
 | 3 | 🔍 Peer Review | Structured review: Summary / Strengths / Weaknesses / Questions |
 | 4 | 📢 Promo Script | Social media posts, blog summary, talk intro, email summary |
 | 5 | 🎙️ Podcast | Solo or two-host script, can generate MP3 audio |
-| 6 | 📤 Export to Google Docs | Export generated content as a Google Doc |
+| 6 | 📤 Export to DOCX | Save generated content as a .docx file in Downloads/ |
 | 7 | 🔊 Read Aloud | Read the generated output aloud via TTS |
 | 0 | All | Generate all features in order: 1 → 2 → 3 → 4 → 5 |
 
@@ -76,7 +76,7 @@ Based on the user's selection, use the `view` tool to read and execute the corre
 
 After executing, ask: "Anything else you'd like?" (show remaining options), and append:
 > 🔊 Want to hear it read aloud? Reply **7** to listen to the output just generated.
-> 📤 Happy with the results? Reply **6** to export everything to Google Docs.
+> 📤 Happy with the results? Reply **6** to export everything as a DOCX to your Downloads/ folder.
 
 ---
 

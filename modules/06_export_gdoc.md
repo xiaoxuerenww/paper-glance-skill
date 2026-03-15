@@ -1,48 +1,6 @@
-# Module 6: 📤 Export to Google Docs
+# Module 6: 📤 Export to DOCX
 
-Compile and export content generated in this conversation (analysis report, mind map, peer review, promo scripts, podcast script, etc.) to a Google Docs document.
-
----
-
-## Step 0: Detect Google Docs MCP Availability
-
-Try calling `gdrive_create_document` or `google_docs_create` (test call, no parameters):
-
-- ✅ **Call succeeds** → MCP connected; proceed to Step 1 and notify the user: "📤 Google Docs MCP is ready — exporting directly"
-- ❌ **Call fails / tool not found** → MCP not connected; show setup instructions below, then **fall back to Markdown export mode**
-
----
-
-### When Google Docs MCP is not connected
-
-> ⚠️ **Google Docs MCP not detected — exporting as Markdown instead.**
->
-> To export directly to Google Docs, follow these steps:
->
-> **Step 1: Configure Google Drive MCP**
->
-> Add the following to your Claude Desktop config file:
->
-> Config file location:
-> - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-> - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
->
-> Add to `mcpServers`:
-> ```json
-> "gdrive": {
->   "command": "npx",
->   "args": ["-y", "@modelcontextprotocol/server-gdrive"]
-> }
-> ```
->
-> **Step 2: Authorize your Google account**
->
-> After restarting Claude Desktop, a Google OAuth window will appear on first use. Authorize it and you're ready.
->
-> **Step 3: Restart Claude Desktop and re-run the export.**
->
-> ---
-> Continuing with Markdown export now — you can paste it into any document tool 👇
+Compile content generated in this conversation into a `.docx` file saved to the user's `Downloads/` folder.
 
 ---
 
@@ -52,21 +10,21 @@ Ask the user:
 
 > "Which content would you like to export? (You can pick multiple)
 > 1. 📊 Deep Analysis Report
-> 2. 🧠 Mind Map (Mermaid code)
+> 2. 🧠 Mind Map (Mermaid code, with view link)
 > 3. 🔍 Peer Review
 > 4. 📢 Promotional Scripts
 > 5. 🎙️ Podcast Script
 > 0. All content generated in this session
 >
-> Document title? (Default: *[PAPER_CORE.title]* — Analysis Report)"
+> Document title? (Default: `[paper-short-title]_report`)"
 
-If not specified, default to all content generated in this session, using the default title.
+If not specified, default to all content generated in this session.
 
 ---
 
 ## Step 2: Compile Document Content
 
-Organize the selected content into a structured document:
+Assemble the selected content into a single Markdown string with this structure:
 
 ```
 # [PAPER_CORE.title] ([PAPER_CORE.year])
@@ -79,43 +37,87 @@ Organize the selected content into a structured document:
 
 ---
 
-[Selected module content, arranged in order: 1 → 2 → 3 → 4 → 5]
+[Selected module content in order: 1 → 2 → 3 → 4 → 5]
 ```
 
-**Mermaid diagrams**: Mermaid code cannot render in Google Docs — keep the code block and add a note:
+**Mermaid diagrams**: cannot render in DOCX — keep the code block and add:
 > 💡 *Paste the Mermaid code below into [mermaid.live](https://mermaid.live) to view the diagram*
 
 ---
 
-## Step 3A: Google Docs Export (when MCP is available)
+## Step 3: Determine Downloads Path
 
-1. Call the MCP tool to create the document:
-   - Tool: `gdrive_create_document` or `google_docs_create`
-   - Parameters: `title` (document title), `content` (compiled content from Step 2)
+Resolve the user's Downloads folder:
 
-2. After getting the document link, tell the user:
-   > "📄 Google Doc created: [document link]
-   > Click the link to view and edit."
+| OS | Default path |
+|----|-------------|
+| macOS | `/Users/[username]/Downloads/` |
+| Windows | `C:\Users\[username]\Downloads\` |
+| Linux | `/home/[username]/Downloads/` |
 
-3. If the MCP supports permission settings, default to "Anyone with the link can comment" and inform the user they can adjust this in Google Docs.
+If the username is unknown, ask:
+> "What is your system username? (Used to build the Downloads path, e.g. `/Users/yourname/Downloads/`)"
+
+Output filename: `[document-title].md` (intermediate) and `[document-title].docx` (final).
+Example: `attention_report.docx`
 
 ---
 
-## Step 3B: Markdown Fallback Export (when MCP is not available)
+## Step 4: Write and Convert
 
-Output the full Markdown document in the conversation and prompt:
+### 4a. Write the Markdown file
 
-> "📋 Here is the full document content (Markdown format).
+Use the `write_file` tool (or equivalent filesystem tool) to save the compiled Markdown to:
+```
+/Users/[username]/Downloads/[document-title].md
+```
+
+### 4b. Convert to DOCX using Pandoc
+
+Run the following shell command:
+```bash
+pandoc "/Users/[username]/Downloads/[document-title].md" \
+  -o "/Users/[username]/Downloads/[document-title].docx"
+```
+
+- ✅ **Conversion succeeds** → notify the user (see Step 5)
+- ❌ **`pandoc` not found** → show installation instructions below, and offer the `.md` file as fallback
+
+---
+
+### When Pandoc is not installed
+
+> ⚠️ **`pandoc` not found — the Markdown file has been saved but could not be converted to DOCX.**
 >
-> **To import into Google Docs:**
-> 1. Copy all the content below
-> 2. Go to [Google Docs](https://docs.google.com) → create a new document
-> 3. Paste the content (formatting will adapt automatically)
+> **Option 1: Install Pandoc**
+> - macOS: `brew install pandoc`
+> - Windows: download from [pandoc.org/installing](https://pandoc.org/installing.html)
+> - Linux: `sudo apt install pandoc`
 >
-> Or save as a `.md` file and convert with Pandoc:
+> Then run:
 > ```bash
-> pandoc paper_report.md -o paper_report.docx
-> ```"
+> pandoc "~/Downloads/[document-title].md" -o "~/Downloads/[document-title].docx"
+> ```
+>
+> **Option 2: Open the `.md` file directly**
+> The Markdown file is already saved at:
+> `~/Downloads/[document-title].md`
+> You can open it in VS Code, Typora, Obsidian, or any Markdown editor.
+>
+> **Option 3: Paste into Word / Google Docs manually**
+> The full document content is shown below — copy and paste it in.
+
+---
+
+## Step 5: After Successful Export
+
+> "📄 Export complete!
+> - **DOCX**: `~/Downloads/[document-title].docx`
+> - **Markdown source**: `~/Downloads/[document-title].md`
+>
+> Would you also like:
+> - 🔊 Read the report aloud (Module 7)
+> - 🎙️ Generate a podcast version (Module 5)"
 
 ---
 
@@ -123,5 +125,6 @@ Output the full Markdown document in the conversation and prompt:
 
 - Export content must be complete — do not truncate any module
 - The document header must include paper metadata (title, year, venue, authors, one_liner)
-- If a module was not generated in this session, note "(not generated this session — return to main menu to generate)"
-- Mermaid code must be preserved in full, with the mermaid.live link notice
+- If a module was not generated in this session, note: "(not generated this session — return to main menu to generate)"
+- Mermaid code blocks must be preserved in full with the mermaid.live notice
+- Always clean up the intermediate `.md` file if the `.docx` was created successfully and the user did not ask to keep it
