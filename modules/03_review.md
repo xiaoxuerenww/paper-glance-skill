@@ -1,92 +1,82 @@
-# 模块 3：审稿意见
+# Module 3: 🔍 Peer Review
 
-以学术期刊/顶会审稿人视角，对论文进行结构化评审，输出专业审稿报告。
-
----
-
-## 询问审稿风格（可选）
-
-若用户未指定，直接按默认格式输出。可选风格：
-
-- **默认**：中英双语，适合自我检查或投稿前预审
-- **英文**：全英文，模拟真实 reviewer 意见
-- **中文**：全中文，适合国内期刊或组会汇报
+Produce a structured academic review from the perspective of a top-venue reviewer. **Output entirely in English.**
 
 ---
 
-## 输出格式
+## Output Format
 
-严格按以下结构输出，每个 section 都必须完整：
+Follow this structure strictly — every section must be complete:
 
 ---
 
 ### 📋 Paper Review
 
-**Title**: [论文标题]
-**Venue (if known)**: [会议/期刊名称，不知道则写 Unknown]
-**Overall Score**: [分数 1–10 + 一句评价，如：6/10 — Interesting idea but needs stronger experiments]
+**Title**: [paper title]
+**Venue (if known)**: [conference/journal name, or "Unknown"]
+**Overall Score**: [score 1–10 + one-line verdict, e.g. 6/10 — Interesting idea but needs stronger experiments]
 
 ---
 
 ### 1. Summary
 
-用 3–5 句话概括论文的核心问题、提出方法和主要贡献。要求：
-- 客观陈述，不含评价
-- 包含论文解决的具体问题、方法的核心思路、主要实验结论
+Summarize the paper in 3–5 sentences covering: the core problem, the proposed method, and the main findings. Requirements:
+- Objective — no evaluation, just description
+- Must include: the specific problem addressed, the method's key idea, and the main experimental conclusion
 
 ---
 
 ### 2. Strengths
 
-列出 3–5 条优点，每条格式：
+List 3–5 strengths. Format for each:
 
-**[S1]** [标题]：[1–2句具体说明，引用论文中的具体内容或数字]
+**[S1]** [Short title]: [1–2 sentences with specific evidence or numbers from the paper]
 
-评价维度参考（选择最相关的）：
-- 创新性：问题定义新颖 / 方法设计独特
-- 实验充分：数据集多样 / 与 baseline 对比全面
-- 理论支撑：有严格证明或理论分析
-- 实用价值：可部署 / 开源 / 易复现
-- 写作清晰：结构清楚 / 图表直观
+Evaluation dimensions to consider (pick the most relevant):
+- Novelty: novel problem formulation / unique method design
+- Empirical rigor: diverse datasets / comprehensive baseline comparisons
+- Theoretical grounding: formal proofs or analysis
+- Practical value: deployable / open-sourced / easy to reproduce
+- Clarity: well-structured writing / intuitive figures
 
 ---
 
 ### 3. Weaknesses
 
-列出 3–5 条不足，每条格式：
+List 3–5 weaknesses. Format for each:
 
-**[W1]** [标题]：[1–2句具体说明] → **建议**：[具体改进方向]
+**[W1]** [Short title]: [1–2 sentences of specific explanation] → **Suggestion**: [concrete improvement]
 
-评价维度参考（选择最相关的）：
-- 实验不足：缺少某类对比 / 消融实验不完整 / 数据集单一
-- 动机不清：为什么这样设计缺乏解释
-- 可扩展性存疑：在其他场景/规模下是否有效未验证
-- 写作问题：某部分描述模糊 / 图表不清晰
-- 局限性未讨论：未承认方法的适用边界
+Evaluation dimensions to consider (pick the most relevant):
+- Insufficient experiments: missing a specific comparison / incomplete ablation / single dataset
+- Unclear motivation: lack of justification for a design choice
+- Questionable scalability: not validated on other settings or scales
+- Writing issues: a section is vague / figures are unclear
+- Limitations not acknowledged: method's scope of applicability not discussed
 
 ---
 
 ### 4. Questions for Authors
 
-列出 3–5 个需要作者澄清的问题，格式：
+List 3–5 questions that need clarification. Format:
 
-**[Q1]** [具体问题？]
+**[Q1]** [Specific question?]
 
-问题应聚焦于：
-- 实验设置的合理性
-- 方法某个设计决策的依据
-- 结果在特定条件下的可复现性
-- 与某篇相关工作的具体区别
+Questions should focus on:
+- Justification for experimental design choices
+- Rationale behind specific method decisions
+- Reproducibility of results under particular conditions
+- Specific differences from closely related work
 
 ---
 
-### 5. Minor Comments（可选）
+### 5. Minor Comments (optional)
 
-若有以下类型的小问题，简要列出（无则省略此节）：
-- 公式符号未定义
-- 参考文献格式问题
-- 图表标注不清
-- 笔误或语言问题
+If any of the following exist, list them briefly (omit this section if none):
+- Undefined formula symbols
+- Reference formatting issues
+- Unclear figure captions
+- Typos or grammatical errors
 
 ---
 
@@ -94,13 +84,13 @@
 
 **Recommendation**: [Accept / Weak Accept / Borderline / Weak Reject / Reject]
 
-**Justification**（2–3句）：综合以上，说明推荐决定的主要理由，点出最关键的 1–2 个因素。
+**Justification** (2–3 sentences): Summarize the main reason for the recommendation, highlighting the 1–2 most critical factors.
 
 ---
 
-## 质量要求
+## Quality Requirements
 
-- Weaknesses 必须具体，不写"实验不够多"这种泛泛之词，要指出**具体缺了哪个实验**
-- Questions 必须是真实的疑问，不是对 Weaknesses 的重复
-- 分数评判标准：8+ 强烈接收，6–7 有条件接收，4–5 大修，1–3 拒稿
-- 所有评价依据来自 `PAPER_CORE`，不捏造论文未提及的内容
+- Weaknesses must be specific — never write vague comments like "more experiments needed"; always name **exactly which experiment is missing**
+- Questions must be genuine open questions, not restatements of weaknesses
+- Scoring guide: 8+ = strong accept, 6–7 = accept with conditions, 4–5 = major revision, 1–3 = reject
+- All evaluations must be grounded in `PAPER_CORE`; do not fabricate content not in the paper

@@ -1,147 +1,122 @@
-# 模块 4：宣传脚本
+# Module 4: 📢 Promotional Scripts
 
-将论文转化为多种推广内容。面向作者自我宣传、实验室推广、科普传播等场景。
+Turn the paper into multiple promotional formats. Use cases: author self-promotion, lab outreach, science communication. **Output entirely in English.**
 
-## 询问宣传场景
+## Ask for Desired Format
 
-> "需要哪种宣传内容？（可多选）
-> A) 🐦 社交媒体推文（Twitter/X 或微博风格）
-> B) 📱 公众号/知乎摘要（500-800字，吸引非专业读者）
-> C) 🎤 学术报告开场白（30秒口头介绍，面向同行）
-> D) 📧 邮件摘要（给导师/合作者的简短汇报）
-> E) 全部"
-
----
-
-## 方式 A：社交媒体推文
-
-### Twitter/X 风格（英文，适合国际传播）
-
-```
-🧵 [论文标题的口语化表述] (1/N)
-
-[PAPER_CORE.problem 的日常化描述，引起共鸣]
-
-[1-2个有冲击力的数字，来自 PAPER_CORE.result]
-
-🔑 Key insight: [PAPER_CORE.analogy 的精华版]
-
-📄 Paper: [标题]
-🔗 [arxiv 链接（无则省略此行）]
-
-#MachineLearning #AI #[相关领域标签]
-```
-
-限制：每条推文 ≤280 字符，生成 3-5 条连贯推文串。
-
-### 微博/小红书风格（中文，适合国内传播）
-
-```
-【一句话震惊体标题，来自 PAPER_CORE.fun_fact 或 result】
-
-[2-3句口语化的问题引入]
-
-✨ 这篇论文的核心思路：
-[PAPER_CORE.analogy 的通俗版本，100字以内]
-
-💡 关键结论：
-[最重要的1-2个实验结果，有具体数字]
-
-🔬 论文：[标题]
-
-#论文解读 #AI #[相关领域]
-```
+> "Which type of promotional content do you need? (You can pick multiple)
+> A) 🐦 Social media thread (Twitter/X style)
+> B) 📱 Blog / newsletter summary (500–800 words, for general readers)
+> C) 🎤 Conference talk opener (30-second verbal intro for peers)
+> D) 📧 Email summary (brief update to advisor or collaborator)
+> E) All of the above"
 
 ---
 
-## 方式 B：公众号/知乎摘要
-
-500-800字，结构如下：
+## Format A: Social Media Thread (Twitter/X)
 
 ```
-**标题**：[吸引人的标题，用问题或数字开头，不超过20字]
+🧵 [casual title summarizing the paper] (1/N)
 
-**导语**（50字）：
-一个让普通读者感同身受的问题或场景
+[PAPER_CORE.problem rephrased as a relatable everyday observation]
 
-**背景**（100字）：
-这个领域在解决什么问题，为什么重要
+[1–2 high-impact numbers from PAPER_CORE.result]
 
-**这篇论文做了什么**（200字）：
-用 PAPER_CORE.analogy 解释核心方法
-避免公式，多用"相当于""就像""你可以理解为"
+🔑 Key insight: [distilled version of PAPER_CORE.analogy]
 
-**结果有多好**（100字）：
-关键数字 + 与之前方法的对比，有语境
+📄 Paper: [title]
+🔗 [arxiv link (omit this line if unavailable)]
 
-**为什么值得关注**（150字）：
-PAPER_CORE.significance，对行业/日常生活的潜在影响
-
-**延伸阅读**：
-论文标题、作者、发表年份
+#MachineLearning #AI #[relevant field tag]
 ```
 
-写作风格：像一个懂技术的朋友在朋友圈分享，不装，不卖弄，有观点。
+Constraints: each tweet ≤ 280 characters; generate 3–5 connected tweets in a thread.
 
 ---
 
-## 方式 C：学术报告开场白
+## Format B: Blog / Newsletter Summary
 
-30秒口头介绍，面向同行，正式但不枯燥。
+500–800 words, structured as follows:
 
 ```
-[场景版本 1：会议报告]
+**Title**: [engaging headline starting with a question or number, ≤12 words]
+
+**Hook** (50 words):
+A scenario or question that resonates with a general reader
+
+**Background** (100 words):
+What problem this field is tackling and why it matters
+
+**What this paper does** (200 words):
+Use PAPER_CORE.analogy to explain the core method.
+Avoid formulas. Use phrases like "essentially", "think of it as", "it's like".
+
+**How well does it work** (100 words):
+Key numbers + comparison to prior methods, with context
+
+**Why it matters** (150 words):
+PAPER_CORE.significance — potential impact on industry or daily life
+
+**Further reading**:
+Paper title, authors, year, venue
+```
+
+Writing style: like a knowledgeable friend sharing something interesting — direct, no jargon-dropping, with a point of view.
+
+---
+
+## Format C: Conference Talk Opener
+
+30-second verbal intro for an academic audience — formal but engaging.
+
+```
+[Version 1: Conference presentation]
 "I'm going to talk about [PAPER_CORE.title].
- The problem we're addressing is [problem，一句话].
- Our key insight is [insight，用 analogy 类比].
- We show that [result，关键数字].
+ The problem we're addressing is [problem, one sentence].
+ Our key insight is [insight, use analogy as a hook].
+ We show that [result, key number].
  I'll walk you through our approach in the next [X] minutes."
 
-[场景版本 2：海报展示]
+[Version 2: Poster session]
 "Hi, this poster is about [topic].
- [problem 的日常化描述].
+ [problem rephrased as everyday frustration].
  We found that [one_liner].
- If you're interested in [key_concepts 中1-2个方向]，let's chat!"
-
-中文版本（中文学术报告）：
-"大家好，我今天介绍的工作是关于[topic]的。
- [problem，一句话]. 我们的核心发现是[one_liner].
- 实验结果显示[result]. 接下来我会花[X]分钟介绍我们的方法。"
+ If you're interested in [1–2 key concepts], let's chat!"
 ```
 
 ---
 
-## 方式 D：邮件摘要
+## Format D: Email Summary
 
-给导师或合作者的简短汇报，100-150字。
+Brief update to an advisor or collaborator, 100–150 words.
 
 ```
-Subject: 论文推荐 | [PAPER_CORE.title]
+Subject: Paper recommendation | [PAPER_CORE.title]
 
-[导师称呼]，
+Hi [name],
 
-推荐一篇最近看到的工作：《[title]》（[venue] [year]）。
+Wanted to share a paper I came across: "[title]" ([venue] [year]).
 
-核心贡献：[one_liner]。
+Core contribution: [one_liner].
 
-方法上，[method 的1-2句概述]。
+Methodologically, [1–2 sentence overview of method].
 
-关键结果：[result，最重要的1个数字]。
+Key result: [most important single number from result].
 
-[可选：与我们组研究方向的关联，1句话]
+[Optional: one sentence on how this connects to our research direction]
 
-附上链接：[如有]
+Link: [if available]
 ```
 
 ---
 
-## 通用宣传原则
+## General Principles
 
-**数字要有对比语境**：不说"精度提升了3%"，说"比当前最好的方法精度高3%，相当于…"
+**Numbers need context**: don't say "accuracy improved by 3%"; say "3% better than the previous best method — roughly equivalent to…"
 
-**用类比代替术语**：面向非专业读者时，每个术语必须有通俗解释
+**Use analogies instead of jargon**: for non-expert audiences, every technical term needs a plain-language explanation
 
-**好标题的公式**：
-- 数字型：「用 1% 的参数量，达到 GPT-4 的 90% 性能」
-- 问题型：「为什么 AI 越来越'健忘'？这篇论文给出了答案」
-- 反转型：「我们以为模型在推理，其实它只是在记忆」
+**Good headline formulas**:
+- Number-led: "Matching GPT-4's performance with 1% of the parameters"
+- Question-led: "Why do AI models keep forgetting? This paper has an answer"
+- Reversal: "We thought the model was reasoning — turns out it was just memorizing"

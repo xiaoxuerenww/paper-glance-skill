@@ -1,127 +1,130 @@
-# 模块 6：📤 导出到 Google Docs
+# Module 6: 📤 Export to DOCX
 
-将本次对话中生成的内容（分析报告、思维导图、审稿意见、宣传脚本、播客脚本等）整理后导出为 Google Docs 文档。
-
----
-
-## 第零步：检测 Google Docs MCP 是否可用
-
-尝试调用 `gdrive_create_document` 或 `google_docs_create` 工具（无参数测试调用）：
-
-- ✅ **调用成功** → MCP 已连接，进入第一步，告知用户"📤 Google Docs MCP 已就绪，可以直接导出"
-- ❌ **调用失败 / 工具不存在** → MCP 未连接，输出以下提示后**降级为 Markdown 导出模式**：
+Compile content generated in this conversation into a `.docx` file saved to the user's `Downloads/` folder.
 
 ---
 
-### MCP 未连接时的提示内容
+## Step 1: Confirm Export Content
 
-> ⚠️ **未检测到 Google Docs MCP，将导出为 Markdown 格式。**
+Ask the user:
+
+> "Which content would you like to export? (You can pick multiple)
+> 1. 📊 Deep Analysis Report
+> 2. 🧠 Mind Map (Mermaid code, with view link)
+> 3. 🔍 Peer Review
+> 4. 📢 Promotional Scripts
+> 5. 🎙️ Podcast Script
+> 0. All content generated in this session
 >
-> 如需直接导出到 Google Docs，请按以下步骤安装：
->
-> **第一步：确认 Google Drive MCP 配置**
->
-> 在 Claude Desktop 配置文件中添加：
->
-> 配置文件路径：
-> - macOS：`~/Library/Application Support/Claude/claude_desktop_config.json`
-> - Windows：`%APPDATA%\Claude\claude_desktop_config.json`
->
-> 在 `mcpServers` 中添加：
-> ```json
-> "gdrive": {
->   "command": "npx",
->   "args": ["-y", "@modelcontextprotocol/server-gdrive"]
-> }
-> ```
->
-> **第二步：授权 Google 账号**
->
-> 重启 Claude Desktop 后，首次使用时会弹出 Google OAuth 授权窗口，授权后即可使用。
->
-> **第三步：重启 Claude Desktop，重新运行导出即可。**
->
-> ---
-> 现在继续为你生成 Markdown 文档，可复制后粘贴到任意文档工具 👇
+> Document title? (Default: `[paper-short-title]_report`)"
+
+If not specified, default to all content generated in this session.
 
 ---
 
-## 第一步：确认导出内容
+## Step 2: Compile Document Content
 
-询问用户：
-
-> "需要导出哪些内容？（可多选）
-> 1. 📊 深度分析报告
-> 2. 🧠 思维导图（Mermaid 代码）
-> 3. 🔍 审稿意见
-> 4. 📢 宣传脚本
-> 5. 🎙️ 播客脚本
-> 0. 全部已生成的内容
->
-> 文档标题？（默认：《[PAPER_CORE.title]》分析报告）"
-
-若用户未指定，默认导出本次对话中已生成的全部内容，标题使用默认格式。
-
----
-
-## 第二步：整理文档内容
-
-将所选内容整理为结构化文档，格式如下：
+Assemble the selected content into a single Markdown string with this structure:
 
 ```
-# 《[PAPER_CORE.title]》（[PAPER_CORE.year]）
+# [PAPER_CORE.title] ([PAPER_CORE.year])
 
 > [PAPER_CORE.one_liner]
 
-**作者**：[PAPER_CORE.authors]
-**发表**：[PAPER_CORE.venue]
-**导出时间**：[当前日期]
+**Authors**: [PAPER_CORE.authors]
+**Venue**: [PAPER_CORE.venue]
+**Exported**: [current date]
 
 ---
 
-[所选模块的完整内容，按 1→2→3→4→5 顺序排列]
+[Selected module content in order: 1 → 2 → 3 → 4 → 5]
 ```
 
-**思维导图处理**：Mermaid 代码在 Google Docs 中无法渲染，改为保留代码块并附注：
-> 💡 *请将以下 Mermaid 代码粘贴到 [mermaid.live](https://mermaid.live) 查看思维导图*
+**Mermaid diagrams**: cannot render in DOCX — keep the code block and add:
+> 💡 *Paste the Mermaid code below into [mermaid.live](https://mermaid.live) to view the diagram*
 
 ---
 
-## 第三步A：Google Docs 导出（MCP 可用时）
+## Step 3: Determine Downloads Path
 
-1. 调用 MCP 工具创建文档：
-   - 工具：`gdrive_create_document` 或 `google_docs_create`
-   - 参数：`title`（文档标题）、`content`（第二步整理的内容）
+Resolve the user's Downloads folder:
 
-2. 获取文档链接后，告知用户：
-   > "📄 Google Docs 文档已创建：[文档链接]
-   > 点击链接即可查看和编辑。"
+| OS | Default path |
+|----|-------------|
+| macOS | `/Users/[username]/Downloads/` |
+| Windows | `C:\Users\[username]\Downloads\` |
+| Linux | `/home/[username]/Downloads/` |
 
-3. 若 MCP 支持设置权限，默认设为"任何人可评论"，并告知用户可在 Google Docs 中调整。
+If the username is unknown, ask:
+> "What is your system username? (Used to build the Downloads path, e.g. `/Users/yourname/Downloads/`)"
+
+Output filename: `[document-title].md` (intermediate) and `[document-title].docx` (final).
+Example: `attention_report.docx`
 
 ---
 
-## 第三步B：Markdown 降级导出（MCP 不可用时）
+## Step 4: Write and Convert
 
-直接在对话中输出完整 Markdown 文档，并提示：
+### 4a. Write the Markdown file
 
-> "📋 以下是完整文档内容（Markdown 格式）。
+Use the `write_file` tool (or equivalent filesystem tool) to save the compiled Markdown to:
+```
+/Users/[username]/Downloads/[document-title].md
+```
+
+### 4b. Convert to DOCX using Pandoc
+
+Run the following shell command:
+```bash
+pandoc "/Users/[username]/Downloads/[document-title].md" \
+  -o "/Users/[username]/Downloads/[document-title].docx"
+```
+
+- ✅ **Conversion succeeds** → notify the user (see Step 5)
+- ❌ **`pandoc` not found** → show installation instructions below, and offer the `.md` file as fallback
+
+---
+
+### When Pandoc is not installed
+
+> ⚠️ **`pandoc` not found — the Markdown file has been saved but could not be converted to DOCX.**
 >
-> **导入到 Google Docs 的方法：**
-> 1. 复制下方全部内容
-> 2. 打开 [Google Docs](https://docs.google.com) → 新建文档
-> 3. 粘贴内容（格式会自动适配）
+> **Option 1: Install Pandoc**
+> - macOS: `brew install pandoc`
+> - Windows: download from [pandoc.org/installing](https://pandoc.org/installing.html)
+> - Linux: `sudo apt install pandoc`
 >
-> 或者直接将内容保存为 `.md` 文件后用 Pandoc 转换：
+> Then run:
 > ```bash
-> pandoc 论文报告.md -o 论文报告.docx
-> ```"
+> pandoc "~/Downloads/[document-title].md" -o "~/Downloads/[document-title].docx"
+> ```
+>
+> **Option 2: Open the `.md` file directly**
+> The Markdown file is already saved at:
+> `~/Downloads/[document-title].md`
+> You can open it in VS Code, Typora, Obsidian, or any Markdown editor.
+>
+> **Option 3: Paste into Word / Google Docs manually**
+> The full document content is shown below — copy and paste it in.
 
 ---
 
-## 质量要求
+## Step 5: After Successful Export
 
-- 导出内容保持原模块的完整性，不删减
-- 文档顶部必须包含论文基本信息（title、year、venue、authors、one_liner）
-- 如果某模块本次对话中未生成，注明"（本次未生成，如需可返回主菜单选择）"
-- Mermaid 代码必须保留完整，附 mermaid.live 链接提示
+> "📄 Export complete!
+> - **DOCX**: `~/Downloads/[document-title].docx`
+> - **Markdown source**: `~/Downloads/[document-title].md`
+>
+> Would you also like:
+> - 🔊 Read the report aloud (Module 7)
+> - 🎙️ Generate a podcast version (Module 5)"
+
+---
+
+## Quality Requirements
+
+- Export content must be complete — do not truncate any module
+- The document header must include paper metadata (title, year, venue, authors, one_liner)
+- If a module was not generated in this session, note: "(not generated this session — return to main menu to generate)"
+- Mermaid code blocks must be preserved in full with the mermaid.live notice
+- Always clean up the intermediate `.md` file if the `.docx` was created successfully and the user did not ask to keep it

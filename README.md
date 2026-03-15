@@ -14,16 +14,18 @@
 
 ## ✨ 功能一览
 
-| # | 功能 | 说明 | 
+| # | 功能 | 说明 |
 |---|------|------|
+| 🎤 | 语音输入 | 语音命令控制 + 音频文件转写（内置免配置，音频文件需 Whisper MCP）|
 | 1 | 📊 深度分析报告 | 方法、实验、创新点的完整学术解读 |
 | 2 | 🧠 思维导图 | Mermaid 思维导图 + 方法流程图，对话内直接渲染 | 
 | 3 | 🔍 审稿意见 | Summary / Strengths / Weaknesses / Questions 专业格式 | 
 | 4 | 📢 宣传脚本 | 推文、公众号摘要、演讲开场白、邮件摘要 |
 | 5 | 🎙️ 播客音频 | 单人/双人播客脚本，可连接 TTS 一键生成 MP3 |
-| 6 | 📤 导出 Google Docs | 将已生成内容一键导出为 Google Docs 文档 |
+| 6 | 📤 Export to DOCX | Save generated content as a `.docx` file in `Downloads/` via Pandoc |
+| 7 | 🔊 朗读输出 | 将刚生成的分析/审稿/宣传内容朗读出来，需 edge-tts MCP |
 
-> 1-4 功能无需 MCP；5 号播客在未连接 [TTS MCP](https://github.com/CatVinci-Studio/better-tts-mcp) 时会自动降级为纯文字脚本；6 号导出在未连接 Google Drive MCP 时会自动降级为 Markdown 格式输出。
+> Features 1–4 require no MCP. Voice commands work via Claude Desktop's built-in STT with no setup. Audio file transcription requires Whisper MCP (fallback instructions provided). Feature 5 (podcast) degrades to text-only script without [TTS MCP](https://github.com/CatVinci-Studio/better-tts-mcp). Feature 6 (export) requires [Pandoc](https://pandoc.org) for DOCX conversion; falls back to saving a `.md` file with install instructions.
 
 ---
 
@@ -39,7 +41,7 @@
 
 ### 第二步：开始使用
 
-安装后，上传一篇论文 PDF，发送任意消息：
+安装后，上传一篇论文 PDF，发送任意消息（文字或语音）：
 
 ```
 "帮我看这篇论文"
@@ -47,6 +49,8 @@
 "帮我写审稿意见"
 "做一份宣传推文"
 ```
+
+或点击 🎤 麦克风图标直接说出指令，Claude 会自动识别并执行对应功能。
 
 Claude 会自动读取论文，展示功能菜单：
 
@@ -93,14 +97,13 @@ Claude 会自动读取论文，展示功能菜单：
 ### 4 · 📢 宣传脚本
 一键生成多种宣传格式：Twitter/X 推文（含 hashtag）、公众号/知乎摘要、学术演讲开场介绍、邮件摘要。
 
-### 6 · 📤 导出 Google Docs
+### 6 · 📤 Export to DOCX
 
-对结果满意后，回复 **6** 即可将本次对话中已生成的任意内容（可多选）整理导出：
+Reply **6** to export any generated content from this session into a `.docx` file saved directly to your `Downloads/` folder.
 
-- 若已连接 [Google Drive MCP](https://github.com/modelcontextprotocol/servers/tree/main/src/gdrive)，直接创建 Google Docs 并返回链接
-- 若未连接，自动降级为 Markdown 格式输出，并提供粘贴到 Google Docs 的步骤说明
-
-导出文档包含论文基本信息（标题、作者、年份、一句话摘要）和所选内容，思维导图代码块附 [mermaid.live](https://mermaid.live) 渲染链接。
+- Writes a Markdown file to `Downloads/`, then converts it to DOCX using [Pandoc](https://pandoc.org)
+- If Pandoc is not installed, the Markdown file is still saved and install instructions are provided
+- Mind map Mermaid code is preserved with a [mermaid.live](https://mermaid.live) link for viewing
 
 ### 5 · 🎙️ 播客脚本 + 音频生成
 将论文自动转成可播客化内容，支持两种模式：
@@ -124,12 +127,14 @@ paper-glance-skill/
 ├── shared/
 │   └── paper_core.md       # 共享论文提取框架
 └── modules/
+    ├── 00_voice_input.md   # 语音输入 + 音频转写
     ├── 01_analysis.md      # 深度分析报告
     ├── 02_mindmap.md       # 思维导图 + 流程图
     ├── 03_review.md        # 审稿意见
     ├── 04_promo.md         # 宣传脚本
     ├── 05_podcast.md       # 播客脚本 + 音频生成
-    └── 06_export_gdoc.md   # 导出到 Google Docs
+    ├── 06_export_gdoc.md   # 导出到 Google Docs
+    └── 07_read_aloud.md    # 朗读输出内容
 ```
 
 ---
